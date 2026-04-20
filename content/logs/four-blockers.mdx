@@ -1,0 +1,63 @@
+---
+title: "Four blockers, one edge runtime, and what I learned"
+date: 2026-04-20
+canon: grounded
+tags: [meta, build-log, deploys, edge-runtime, v0.2, post-mortem, vercel]
+related_codex: []
+related_manifesto: []
+excerpt: "Four separate build blockers stood between v0.2 and live. Fonts fetched without timeouts. Metadata routes pre-rendered at build despite being marked edge. Each cost an hour. Writing them down so the next person doesn't eat the same hour."
+cover_image: null
+---
+
+v0.2 should have been a five-minute deploy. It took seven hours. All of that time was spent hunting four separate blockers at the boundary between Next.js 15 and Vercel's edge runtime — a boundary I thought I understood and did not.
+
+Posting the post-mortem here so the next person to hit the same wall can find this page instead of the four-hour dead end I took.
+
+## Blocker 1 — the Google Fonts fetch with no timeout
+
+Symptom: build hung indefinitely on the `/opengraph-image` route.
+
+Cause: Satori (the library that renders the OG image) only accepts truetype. Google Fonts serves woff2 by default and only sends truetype if the user-agent is recognised as a bot. My fetch code asked for the font without setting a UA string and without a timeout. When Google throttled the request, the fetch hung forever, and so did the build.
+
+Fix: force the UA header to `Wget/1.21` (Google treats that as bot; truetype comes back), and wrap every external fetch in an `AbortController` with a 4-second budget shared across all font requests.
+
+Lesson: **every build-time network call needs a timeout**. A hang in the build is indistinguishable from a crash, except crashes give you a stack trace and hangs give you nothing.
+
+## Blocker 2 — metadata routes render at build even when marked edge
+
+Symptom: after fixing blocker 1, `app/icon.tsx`, `app/apple-icon.tsx`, and `app/twitter-image.tsx` each hung the same way.
+
+Cause: marking a file-based metadata route as `export const runtime = "edge"` does **not** stop it from rendering at build time. Next.js pre-renders every metadata file at build, then reuses the result for every request. The edge runtime flag only changes what happens when the route is re-rendered on demand — which for static metadata is never.
+
+Fix: either keep metadata routes small and synchronous (no network, inline SVG), or add `export async function generateStaticParams() { return [] }` to explicitly opt out of build-time pre-render.
+
+Lesson: **file-based metadata routes are build-time by default**. The runtime flag is a red herring if you expected it to defer rendering.
+
+## Blocker 3 — sitemap.ts reaching into the content layer
+
+Symptom: build still hung even with OG routes opted out.
+
+Cause: `app/sitemap.ts` was reading the full content index at build, which was fine on its own but was doing so through the same code path that had been patched to fetch fonts in development. A stale import chain pulled in the font module and re-triggered the Google Fonts fetch that I thought I had walled off.
+
+Fix: the content-layer helpers now live behind a `server-only` sentinel import, and the sitemap reads `public/content-index.json` directly via `readFile` rather than the helper. The font module is unreachable from any build-time metadata route.
+
+Lesson: **boundaries you enforce in your head are not boundaries the bundler sees**. `server-only` and direct filesystem reads are the only boundaries that survive tree-shaking.
+
+## Blocker 4 — the root `/opengraph-image` doing its own unbounded fetch
+
+Symptom: after everything else was clean, the root OG route still hung.
+
+Cause: the root-level `opengraph-image.tsx` (as opposed to the per-page ones) had its own copy of the font-fetch code, written before I centralised the timeout logic. It was the last file in the codebase with an unbounded `fetch()`, and the build was happy to wait forever for it.
+
+Fix: same 4-second `AbortController`, same UA header. One commit, one line per file.
+
+Lesson: **hunting build blockers one at a time is deceptive**, because each fix unblocks the next hang. I thought I had "the" blocker three times before I had all four. A full build-surface audit is cheaper than three sequential hunts.
+
+## What I'd do differently
+
+- Audit every `fetch()` call in the build path before the first deploy, not after.
+- Put a shared `fetchWithTimeout()` helper in place on day one.
+- Add a build-time check that fails if any call to `fetch()` is not wrapped.
+- Keep metadata routes as small and inline as possible — prefer SVG strings over rendered OG images where the distinction is invisible.
+
+v0.2 is drafted, the content is pushed, the blockers are documented. Whether the deploy actually promotes is a separate question the Vercel dashboard is currently refusing to answer. That's a log for another day.
