@@ -1,0 +1,37 @@
+{
+  "name": "motusgridia-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MotusGridia website — motusgridia.com. Pre-Next.js scaffold; layout.tsx + globals.css + content pipeline are wired ahead of the create-next-app pass so the future scaffold session only adds routes and components.",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "build:content": "tsx scripts/build-content-index.ts",
+    "dev:content": "tsx watch scripts/build-content-index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
+    "fast-glob": "^3.3.2",
+    "gray-matter": "^4.0.3",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tsx": "^4.17.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20.11"
+  },
+  "packageManager": "pnpm@9.12.0"
+}

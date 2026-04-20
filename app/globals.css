@@ -1,0 +1,441 @@
+/* MotusGridia — global stylesheet.
+ * Single source of truth for locked design tokens.
+ * Spec: /site/claude.md § Locked design tokens + § Typography.
+ *
+ * Tailwind v4 reads @theme tokens directly; no tailwind.config.ts needed.
+ * Utilities like `bg-bg-deep`, `text-ink-primary`, `text-accent-cyan`,
+ * `font-display`, `font-mono` are generated automatically from the tokens
+ * below.
+ */
+
+@import "tailwindcss";
+
+/* -------------------------------------------------------------------------
+ * Tokens — mirrored into :root as CSS variables and into Tailwind @theme.
+ * Change tokens in this file only. Do NOT introduce new colour values
+ * outside this set — see claude.md § "What requires explicit user
+ * confirmation".
+ * ------------------------------------------------------------------------- */
+
+@theme {
+  /* Background + ink */
+  --color-bg-deep: #07090d;
+  --color-bg-panel: #0b1030;
+  --color-ink-primary: #e8ecf5;
+  --color-ink-mute: #7e89a8;
+
+  /* Accents — cyan primary, magenta rare-salt, amber for fiction/warnings */
+  --color-accent-cyan: #22e5ff;
+  --color-accent-magenta: #ff2fa3;
+  --color-accent-amber: #ffb347;
+
+  /* Hairlines */
+  --color-line-soft: #1a2240;
+
+  /* Glows — used for box-shadow / text-shadow / filter */
+  --color-glow-cyan: rgba(34, 229, 255, 0.18);
+  --color-glow-magenta: rgba(255, 47, 163, 0.18);
+
+  /* Fonts. Variables are wired by next/font in app/layout.tsx; defaults
+     below keep previews sane if next/font is misconfigured. */
+  --font-display: var(--font-fraunces), "Fraunces", "Iowan Old Style", "Palatino", serif;
+  --font-body: var(--font-fraunces), "Fraunces", "Iowan Old Style", "Palatino", serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", "SF Mono", "JetBrains Mono", monospace;
+
+  /* Type scale (rem) — see visual-identity.md § Typography.
+     opsz-tuned via Fraunces' variable axis. */
+  --text-display-1: 5.5rem;   /* hero */
+  --text-display-2: 3.75rem;  /* section titles */
+  --text-display-3: 2.5rem;   /* sub-sections, codex hero */
+  --text-h1: 2rem;
+  --text-h2: 1.5rem;
+  --text-h3: 1.25rem;
+  --text-body-lg: 1.125rem;
+  --text-body: 1rem;
+  --text-body-sm: 0.9375rem;
+  --text-mono-l: 0.875rem;
+  --text-mono: 0.75rem;
+
+  /* Tracking — locked from claude.md § Typography */
+  --tracking-display-1: -0.03em;
+  --tracking-display-2: -0.025em;
+  --tracking-mono-l: 0.08em;
+  --tracking-mono: 0.1em;
+}
+
+/* -------------------------------------------------------------------------
+ * CSS-variable mirror for non-Tailwind consumers (inline style, R3F, GSAP).
+ * These stay in :root so `var(--bg-deep)` etc. work anywhere.
+ * ------------------------------------------------------------------------- */
+
+:root {
+  --bg-deep: #07090d;
+  --bg-panel: #0b1030;
+  --ink-primary: #e8ecf5;
+  --ink-mute: #7e89a8;
+  --accent-cyan: #22e5ff;
+  --accent-magenta: #ff2fa3;
+  --accent-amber: #ffb347;
+  --line-soft: #1a2240;
+  --glow-cyan: rgba(34, 229, 255, 0.18);
+  --glow-magenta: rgba(255, 47, 163, 0.18);
+
+  /* Motion — keep static curves; no springs (claude.md § Motion). */
+  --ease-technical: cubic-bezier(0.2, 0, 0, 1);
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 180ms;
+  --duration-base: 320ms;
+  --duration-slow: 560ms;
+  --duration-hero-entry: 900ms;
+
+  /* Focus ring — 2px cyan glow per claude.md § Component rules #8 */
+  --focus-ring: 0 0 0 2px var(--accent-cyan);
+
+  color-scheme: dark;
+}
+
+/* -------------------------------------------------------------------------
+ * Tonal modes — override a subset of accents per section/canon.
+ * Applied via <body data-tonal-mode="…">. See visual-identity.md §Tonal modes.
+ * Anything not overridden falls back to the base tokens above.
+ * ------------------------------------------------------------------------- */
+
+body[data-tonal-mode="fiction-c1"] {
+  --accent-cyan: #22e5ff;      /* unchanged, but kept here for future shift */
+  --accent-magenta: #ff2fa3;
+  --accent-amber: #ffb347;
+}
+
+body[data-tonal-mode="fiction-c2"] {
+  /* c2 (Cyber Vikings / off-grid raider canon) — push amber forward */
+  --accent-cyan: #8efaff;
+  --accent-amber: #ff9a1f;
+}
+
+body[data-tonal-mode="warning"] {
+  --accent-cyan: #ffb347;
+}
+
+/* -------------------------------------------------------------------------
+ * Base reset + typography.
+ * Fraunces for display + body, Geist Mono for labels/chips/nav.
+ * No sans-serif body text ever (claude.md § What to never do).
+ * ------------------------------------------------------------------------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-deep);
+  color: var(--ink-primary);
+  font-family: var(--font-body);
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 14;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+/* `:where()` keeps specificity at 0 so Tailwind utilities like
+ * `text-ink-mute` can override the default link colour without `!`.
+ * Hover/focus always returns to accent-cyan + glow — this gives us the
+ * "ink-mute → cyan on hover" affordance called out in
+ * /landing-copy-v0.1.md § 6.3 for free, no per-link override needed. */
+:where(a) {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  transition:
+    color var(--duration-fast) var(--ease-technical),
+    text-shadow var(--duration-fast) var(--ease-technical);
+}
+
+:where(a:hover),
+:where(a:focus-visible) {
+  color: var(--accent-cyan);
+  text-shadow: 0 0 12px var(--glow-cyan);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 2px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 144;
+  font-weight: 600;
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--text-display-1);
+  letter-spacing: var(--tracking-display-1);
+  line-height: 1.02;
+}
+
+h2 {
+  font-size: var(--text-display-2);
+  letter-spacing: var(--tracking-display-2);
+  line-height: 1.05;
+}
+
+h3 {
+  font-size: var(--text-h1);
+  line-height: 1.15;
+}
+
+/* Mono label convention — always uppercase (claude.md § Typography). */
+.mono,
+.mono-l {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  font-feature-settings: "ss01" on;
+}
+
+.mono {
+  font-size: var(--text-mono);
+  letter-spacing: var(--tracking-mono);
+}
+
+.mono-l {
+  font-size: var(--text-mono-l);
+  letter-spacing: var(--tracking-mono-l);
+}
+
+/* -------------------------------------------------------------------------
+ * Motion defaults — page-wide scanline at 2% opacity, chromatic aberration
+ * on hover. Reduced motion turns everything static.
+ * claude.md § Component rules #6, #7.
+ * ------------------------------------------------------------------------- */
+
+.scanlines {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 2px,
+    rgba(255, 255, 255, 0.02) 2px,
+    rgba(255, 255, 255, 0.02) 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .scanlines {
+    display: none;
+  }
+}
+
+/* -------------------------------------------------------------------------
+ * Selection — cyan, low-opacity fill, dark ink for contrast.
+ * ------------------------------------------------------------------------- */
+
+::selection {
+  background: var(--accent-cyan);
+  color: var(--bg-deep);
+}
+
+/* -------------------------------------------------------------------------
+ * Skip-to-content — every page ships this for keyboard users.
+ * Wire into app/layout.tsx.
+ * ------------------------------------------------------------------------- */
+
+.skip-to-content {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-panel);
+  color: var(--ink-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  border: 1px solid var(--line-soft);
+  transform: translateY(-200%);
+  transition: transform var(--duration-fast) var(--ease-technical);
+  z-index: 1000;
+}
+
+.skip-to-content:focus-visible {
+  transform: translateY(0);
+}
+
+/* -------------------------------------------------------------------------
+ * Hex primitives — Component rules #1 in claude.md ("Hex DNA"). Every
+ * container, frame, tile is hex-derived. These classes are the shared
+ * primitives; per-component variants compose them.
+ *
+ * The clip-path is a regular pointy-top hexagon. Any element with this
+ * class becomes a hex; pair with the matching aspect ratio so the box
+ * keeps the correct hex proportion (1 : sqrt(3)/2 ≈ 1 : 0.866).
+ * ------------------------------------------------------------------------- */
+
+.hex-clip {
+  clip-path: polygon(
+    50% 0%,
+    100% 25%,
+    100% 75%,
+    50% 100%,
+    0% 75%,
+    0% 25%
+  );
+}
+
+/* Hex frame — used for icon-link buttons in the footer (claude.md §
+ * Component rules #2: "Lines are thin. 1px"). Built by stacking two
+ * pseudo-elements: the outer creates the 1px hex border, the inner masks
+ * out the centre so we get an outline rather than a fill. Glow on hover.
+ */
+
+.hex-frame {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.5rem;
+  color: var(--ink-mute);
+  transition:
+    color var(--duration-fast) var(--ease-technical),
+    filter var(--duration-fast) var(--ease-technical);
+}
+
+.hex-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--line-soft);
+  clip-path: polygon(
+    50% 0%,
+    100% 25%,
+    100% 75%,
+    50% 100%,
+    0% 75%,
+    0% 25%
+  );
+  transition: background var(--duration-fast) var(--ease-technical);
+}
+
+.hex-frame::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: var(--bg-deep);
+  clip-path: polygon(
+    50% 0%,
+    100% 25%,
+    100% 75%,
+    50% 100%,
+    0% 75%,
+    0% 25%
+  );
+}
+
+.hex-frame > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hex-frame:hover,
+.hex-frame:focus-visible {
+  color: var(--accent-cyan);
+  filter: drop-shadow(0 0 8px var(--glow-cyan));
+}
+
+.hex-frame:hover::before,
+.hex-frame:focus-visible::before {
+  background: var(--accent-cyan);
+}
+
+/* Hex tile — used for the three "what's coming" announcements on the
+ * landing page. Larger than hex-frame, fills with bg-panel, hairline
+ * border via the same two-layer technique. Content is centred via
+ * place-items grid. claude.md § Component rules #5 (layered depth):
+ * tile gets bg-panel + a faint inner cyan glow.
+ */
+
+.hex-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1 / 0.866;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.hex-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--line-soft);
+  clip-path: polygon(
+    50% 0%,
+    100% 25%,
+    100% 75%,
+    50% 100%,
+    0% 75%,
+    0% 25%
+  );
+}
+
+.hex-tile::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: var(--bg-panel);
+  clip-path: polygon(
+    50% 0%,
+    100% 25%,
+    100% 75%,
+    50% 100%,
+    0% 75%,
+    0% 25%
+  );
+}
+
+.hex-tile > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* -------------------------------------------------------------------------
+ * Hero radial gradient — the static v0.0 fallback shown until the R3F
+ * honeycomb scene lands. Also serves as the prefers-reduced-motion AND
+ * sub-640px-mobile fallback per /landing-copy-v0.1.md § 8.
+ * Indigo base with a single cyan radial glow centred slightly above the
+ * geometric centre so the wordmark sits on the bright spot.
+ * ------------------------------------------------------------------------- */
+
+.hero-static {
+  background:
+    radial-gradient(
+      ellipse 60% 45% at 50% 38%,
+      rgba(34, 229, 255, 0.18) 0%,
+      rgba(34, 229, 255, 0.05) 35%,
+      transparent 70%
+    ),
+    var(--bg-deep);
+}
