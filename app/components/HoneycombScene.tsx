@@ -172,27 +172,34 @@ function Honeycomb() {
 // ---------------------------------------------------------------------------
 
 export default function HoneycombScene() {
+  // The R3F <Canvas> wrapper div applies inline `position: relative;
+  // width: 100%; height: 100%` via its internal style object. Those inline
+  // defaults beat any `className` we try to set on <Canvas> itself
+  // (inline > class-level specificity), which stranded the canvas at the
+  // HTML default 300×150 inside a flex-centred parent. Wrapping in an
+  // outer div we own — which IS a Tailwind-utility node per
+  // /site/CLAUDE.md "no inline styles" — makes the R3F wrapper fill 100%
+  // of our div, and our div fills the hero section via `absolute inset-0`.
   return (
-    <Canvas
-      // Cap device pixel ratio at 1.5× — going higher chews through GPU
-      // budget on Retina for negligible visual gain on 0.04-rad/s motion.
-      dpr={[1, 1.5]}
-      // Perspective camera pulled back so the whole 9×7 lattice fits the
-      // frame at fov 42. Z = 7 puts the lattice just behind where a human
-      // eye would "rest" on the scene.
-      camera={{ position: [0, 0, 7], fov: 42 }}
-      // alpha: true preserves the parent section's `.hero-static` radial
-      // gradient — the canvas composites on top rather than painting its
-      // own bg. Keeps SSR fallback and live canvas visually continuous.
-      gl={{ antialias: true, alpha: true }}
-      // Anti-pattern guard: `pointer-events-none` keeps hover/click working
-      // on the hex decorative glyphs and wordmark beneath the canvas.
-      // Tailwind utilities used per /site/CLAUDE.md § Build conventions
-      // "No inline styles".
+    <div
+      aria-hidden="true"
       className="pointer-events-none absolute inset-0"
-      // /site/CLAUDE.md § Component rules: no drop shadows, no spring
-      // easing — the linear rotation loop respects that.
     >
+      <Canvas
+        // Cap device pixel ratio at 1.5× — going higher chews through GPU
+        // budget on Retina for negligible visual gain on 0.04-rad/s motion.
+        dpr={[1, 1.5]}
+        // Perspective camera pulled back so the whole 9×7 lattice fits the
+        // frame at fov 42. Z = 7 puts the lattice just behind where a human
+        // eye would "rest" on the scene.
+        camera={{ position: [0, 0, 7], fov: 42 }}
+        // alpha: true preserves the parent section's `.hero-static` radial
+        // gradient — the canvas composites on top rather than painting its
+        // own bg. Keeps SSR fallback and live canvas visually continuous.
+        gl={{ antialias: true, alpha: true }}
+        // /site/CLAUDE.md § Component rules: no drop shadows, no spring
+        // easing — the linear rotation loop respects that.
+      >
       {/* Soft ambient fills the dark sides of each hex prism. */}
       <ambientLight intensity={0.42} color="#1a2240" />
 
@@ -227,6 +234,7 @@ export default function HoneycombScene() {
           modulationOffset={0}
         />
       </EffectComposer>
-    </Canvas>
+      </Canvas>
+    </div>
   );
 }
