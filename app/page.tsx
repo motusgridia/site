@@ -4,7 +4,7 @@
 //       /landing-page-playbook.md
 //       /site/CLAUDE.md (design tokens, anti-patterns, component rules)
 //
-// Status: v0.0 → v0.1.1 upgrade in progress.
+// Status: v0.1.2 — R3F honeycomb hero live above the static gradient.
 //
 // What this file IS today:
 //   The full v0.1 landing structure rendered statically — the
@@ -26,14 +26,21 @@
 //     app/icon.tsx, app/apple-icon.tsx, app/opengraph-image.tsx — no
 //     static .png assets in /public/.
 //
+// What v0.1.2 adds over v0.1.1 (wired below):
+//   - R3F honeycomb canvas overlays `.hero-static` as a client island. The
+//     scene is chunked behind `next/dynamic({ ssr: false })` inside
+//     `HeroCanvas.tsx`, so the three.js code path never touches the server
+//     renderer AND never ships on the initial bundle. The `.hero-static`
+//     radial gradient remains the SSR + reduced-motion + <640px fallback.
+//     See app/components/HeroCanvas.tsx + app/components/HoneycombScene.tsx.
+//
 // What this file ISN'T (yet — handed off to follow-up sessions):
-//   - The R3F honeycomb canvas (lazy-loads in over `.hero-static` once
-//     /stack-recommendation.md's R3F deps are installed).
 //   - GSAP ScrollTrigger entrances.
 //   - Framer Motion staggered letter reveal on the one-liner.
+//   - Lenis smooth scroll.
 //
 // Server component by default per /site/CLAUDE.md § Build conventions.
-// The only client JS on this page is the SubscribeForm island.
+// The only client JS on this page is the SubscribeForm + HeroCanvas islands.
 //
 // Styling rule (CLAUDE.md): No inline styles — Tailwind utilities only,
 // auto-generated from the @theme tokens in globals.css. Arbitrary values
@@ -42,6 +49,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import HeroCanvas from "@/app/components/HeroCanvas";
 import { SubscribeForm } from "@/app/components/SubscribeForm";
 import { SOCIAL_ICON_BY_INITIAL } from "@/app/components/SocialIcons";
 
@@ -168,13 +176,25 @@ export default function HomePage() {
           this self-contained — no additional token churn in globals.css. */}
       <section
         aria-labelledby="wordmark"
-        className="hero-static relative flex min-h-[calc(100dvh-3.5rem)] flex-col items-center justify-center px-6 py-24"
+        className="hero-static relative flex min-h-[calc(100dvh-3.5rem)] flex-col items-center justify-center overflow-hidden px-6 py-24"
       >
+        {/* HeroCanvas is a client island that self-gates on
+            `prefers-reduced-motion` and a <640px viewport. When either gate
+            trips, it renders nothing and the `.hero-static` gradient above
+            is the full visual. When motion is allowed, it overlays a
+            rotating R3F honeycomb lattice (bloom + chromatic aberration)
+            on top of the gradient. pointer-events-none inside the Canvas
+            style keeps the wordmark and decorative glyphs interactive. */}
+        <HeroCanvas />
+
         {/* Hex glyphs left/right per § 1 — small, cyan, 0.6 alpha, ~20% of
-            wordmark height. aria-hidden because they're decorative. */}
+            wordmark height. aria-hidden because they're decorative.
+            Positioned above the canvas via z-[1] so they read as accent
+            punctuation flanking the wordmark even when the R3F lattice is
+            rotating behind them. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 flex items-center justify-center gap-[14vw]"
+          className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center gap-[14vw]"
         >
           <span className="text-[3rem] leading-none text-accent-cyan/60">⬡</span>
           <span className="text-[3rem] leading-none text-accent-cyan/60">⬡</span>
