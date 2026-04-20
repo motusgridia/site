@@ -14,12 +14,16 @@ type NavItem = {
   label: string;
 };
 
-// Order locked by site-ia.md. Lore / Join / Events / Invest are deferred to
-// v0.3+, so they aren't linked. When they ship, add them here.
+// Order locked by site-ia.md + /sim project directive (session 6). The Sim
+// is the public collaboration call for the 3D MMO simulation of the Grid;
+// it sits between Logs and About so a visitor reading the build-in-public
+// diary naturally lands on the call for game-dev collaborators next.
+// Lore / Join / Events / Invest are deferred to v0.3+, not linked yet.
 const ITEMS: NavItem[] = [
   { href: "/manifesto", label: "Manifesto" },
   { href: "/codex", label: "Codex" },
   { href: "/logs", label: "Logs" },
+  { href: "/sim", label: "The Sim" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];

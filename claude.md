@@ -128,6 +128,34 @@ Type scale (rem) — see `../visual-identity.md` § Typography.
 
 ---
 
+## Writing rules (locked — author directive, session 6–7)
+
+Applies to every reader-facing string: MDX content, page.tsx copy, metadata strings, OG/Twitter cards, landing copy, nav labels, form copy.
+
+**Tone — clear, direct, punchy.**
+- Short sentences. Full stops over commas. Break compound ideas into beats.
+- No dramatic or overly poetic language. Skip manifesto-poster metaphors ("a planet in awe of its own geometry", "coral reef growing cell by cell").
+- No koan-style framings ("a room is not a thing, it is a state a room is currently in").
+- No triplet rhetoric in grounded prose ("first the X. then the Y. then the Z."). Fine in fiction.
+- No motivational-poster closes ("a society worth waking up in").
+
+**Em dashes — differ by canon.**
+- Fiction prose (`canon: fiction-*` codex entries, character/faction/event entries with narrative framing): em dashes are fine, no cap. Style choice belongs to the narrative voice.
+- Non-fiction prose (manifesto, grounded codex entries, logs, landing copy, page metadata, about/contact pages): em dashes sparingly. Default to full stops. When an em dash is the right tool use it, but prefer a period if the sentence still works.
+
+**Core concept vs status-right-now — label it.**
+When an entry describes a design goal, call it out explicitly ("The point of the grounded sim is…"). When it describes a pre-production state, say so ("Pre-production. The software does not exist yet."). Don't let aspiration and delivered-today blur.
+
+**Irrelevant-info filter.**
+Before shipping content to `/content/**`:
+- Cut version labels (v0.1, v0.2, v0.1.2) from reader-facing strings. Version labels belong in commit messages and file comments, not prose.
+- Cut uncontextualised character / term drops. If "Kafiristan" or "e-hair" appears, either its own codex entry exists or a one-line inline definition does. Else cut.
+- Cut references to `grid-master-content.md` section numbers ("Parts 1 through 3"). Reader has no access to the master doc.
+- Cut internal sprint labels and Blocker-N section headings from logs.
+- Cut conditional/speculative notes that read as author marginalia ("If the alien elite force itself lands, it lands as…" → either commit to it or cut).
+
+---
+
 ## What requires explicit user confirmation (never silent)
 
 - Choosing copy that isn't already in `../content/` or `../grid-master-content.md`

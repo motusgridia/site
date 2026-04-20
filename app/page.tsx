@@ -68,7 +68,7 @@ const ONE_LINER =
 const TEASER_PARAGRAPH_1 =
   "A simple societal system for the near-future that most people can get behind — and, in the process, a peaceful path through the disaster already unfolding. Not a policy paper. Not a startup. A blueprint you can point to when the current model finally gives out."; // § 3
 const TEASER_PARAGRAPH_2 =
-  "One day the first Grid gets built — on this planet or another — and everyone stands in awe of it and wants to live inside one. The desire runs so strong that the first becomes the second, the second becomes the tenth, and a network of Grids ends up covering a planet. A society fixated on growing the Grid Network of connection, unity and harmony."; // § 3
+  "One day the first Grid gets built, on this planet or another. Everyone stands in awe of it and wants to live inside one. The desire runs so strong that the first becomes the second, the second becomes the tenth, and a network of Grids ends up covering a planet. A society fixated on growing the Grid Network of connection, unity and harmony."; // § 3 — session 7 punchify: two em-dashes in one parenthetical reduced to a comma + full-stop break.
 
 type Tile = { title: string; subLabel: string; href: string };
 const TILES: Tile[] = [
@@ -85,7 +85,7 @@ const TILES: Tile[] = [
   },
   {
     title: "CODEX",
-    subLabel: "Every concept, faction, place, technology — indexed.",
+    subLabel: "Every concept, faction, place, technology. Indexed.",
     href: "/codex",
   },
   {
@@ -262,6 +262,56 @@ export default function HomePage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* THE SIM — PROJECT CTA ----------------------------------------- */}
+      {/* Session 6 strategic directive: The Sim is the 3D MMO simulation of
+          the Grid, shipped as one software product with two modes
+          (grounded sim for blueprint stress-testing, video-game mode with
+          fictional story layer). This CTA funnels visitors into the
+          dedicated /sim page, which is the public call for game-dev
+          collaborators. Sits between the HEX TILES and the newsletter
+          because it's the strongest active project on the site — it
+          deserves its own section, not a fourth squished tile.
+
+          Visual treatment: a single-panel callout. bg-panel fill with a
+          1px accent-cyan/40 border (hairline per CLAUDE.md § Component
+          rules #2). Sharp corners per § Component rules #3. Inner glow
+          on hover, not a drop-shadow, per anti-pattern. Mono eyebrow
+          signals pre-production status explicitly per CLAUDE.md § Writing
+          rules ("core concept vs status-right-now"). */}
+      <section aria-labelledby="sim-heading" className="px-6 py-16 sm:py-24">
+        <div className="mx-auto max-w-4xl">
+          <div className="group relative border border-accent-cyan/40 bg-bg-panel/40 p-10 transition-[border-color,filter] duration-[var(--duration-fast)] ease-[var(--ease-technical)] hover:border-accent-cyan hover:[filter:drop-shadow(0_0_24px_var(--glow-cyan))] sm:p-14">
+            <p className="mono mb-4 text-accent-cyan">
+              [PROJECT · PRE-PRODUCTION]
+            </p>
+            <h2
+              id="sim-heading"
+              className="mb-6 font-display text-display-2 leading-tight tracking-[-0.025em] text-ink-primary"
+            >
+              The Sim
+            </h2>
+            <div className="mb-10 max-w-[58ch] text-body-lg leading-[1.7] text-ink-primary">
+              <p className="mb-4">
+                A 3D MMO simulation of the Grid. One software product, two
+                modes. Grounded simulation for stress-testing the blueprint.
+                Video-game mode with fictional stories on top of the same
+                engine.
+              </p>
+              <p>
+                The software does not exist yet. Looking for game developers,
+                simulation engineers, 3D artists, and narrative designers.
+              </p>
+            </div>
+            <Link
+              href="/sim"
+              className="mono-l inline-block border border-accent-cyan/60 px-8 py-4 text-accent-cyan transition-colors duration-[var(--duration-fast)] ease-[var(--ease-technical)] hover:border-accent-cyan hover:bg-accent-cyan/10"
+            >
+              See the brief →
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* NEWSLETTER FORM ----------------------------------------------- */}
