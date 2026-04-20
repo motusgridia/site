@@ -49,8 +49,19 @@ const WORDMARK = "MOTVSGRIDIA"; // Latin V per /landing-copy-v0.1.md § 1.
 
 // ---------------------------------------------------------------------------
 // Fetch Fraunces from Google Fonts.
-// CSS2 API returns a stylesheet with a woff2 src; we parse it out and fetch
-// the font binary. next/og accepts woff2 in Next.js 15+.
+// Satori (the renderer inside next/og) only accepts *uncompressed* OpenType —
+// raw TTF/OTF bytes. It rejects both WOFF and WOFF2 with `Unsupported OpenType
+// signature wOF2` (or `wOFF`), which in the edge runtime silently returns a
+// 200 with an empty body (observed against Next.js 15 / next/og bundled with
+// `@vercel/og` — the previous comment here claimed woff2 was accepted; it
+// isn't).
+//
+// Trick: Google Fonts serves the font format based on UA sniffing. Modern
+// Chrome → woff2. IE11 → woff (still compressed, still rejected). The known
+// minimal UAs that force Google Fonts to serve uncompressed TTF are
+// empty-UA, wget, or Android 2.x. We use `Wget/1.21` — distinctive in logs,
+// not dependent on empty-UA handling quirks in fetch(), and tested against
+// the CSS2 endpoint to return `format('truetype')` with a direct `.ttf` URL.
 // ---------------------------------------------------------------------------
 
 async function loadFraunces(): Promise<ArrayBuffer | null> {
@@ -60,10 +71,10 @@ async function loadFraunces(): Promise<ArrayBuffer | null> {
       "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@144,600&display=swap",
       {
         headers: {
-          // Chrome UA ensures woff2 delivery. Older UAs trigger woff/ttf
-          // fallbacks; we want the smallest and newest.
-          "User-Agent":
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+          // Wget UA forces Google Fonts to serve truetype. Do NOT change this
+          // to a modern browser UA — the resulting woff2/woff response breaks
+          // Satori (see comment above).
+          "User-Agent": "Wget/1.21",
         },
       },
     );
@@ -71,7 +82,7 @@ async function loadFraunces(): Promise<ArrayBuffer | null> {
     const css = await cssRes.text();
 
     const match = css.match(
-      /src:\s*url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)\s+format\(['"]?woff2['"]?\)/,
+      /src:\s*url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)\s+format\(['"]?truetype['"]?\)/,
     );
     const fontUrl = match?.[1];
     if (!fontUrl) return null;
