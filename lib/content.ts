@@ -22,17 +22,17 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import matter from "gray-matter";
 
-import type { ContentIndex } from "./schemas/content.js";
+import type { ContentIndex } from "./schemas/content";
 import {
   CodexFrontmatter,
   LogFrontmatter,
   ManifestoFrontmatter,
-} from "./schemas/content.js";
+} from "./schemas/content";
 import type {
   CodexFrontmatter as CodexFrontmatterT,
   LogFrontmatter as LogFrontmatterT,
   ManifestoFrontmatter as ManifestoFrontmatterT,
-} from "./schemas/content.js";
+} from "./schemas/content";
 
 // ---------------------------------------------------------------------------
 // Paths — resolved relative to `process.cwd()` which on Vercel is the site
