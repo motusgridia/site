@@ -96,23 +96,32 @@
 
 /* -------------------------------------------------------------------------
  * Tonal modes — override a subset of accents per section/canon.
- * Applied via <body data-tonal-mode="…">. See visual-identity.md §Tonal modes.
+ * Applied via `data-tonal-mode="…"` on ANY ancestor element. The selector
+ * intentionally drops the `body` prefix so an entry-level wrapper (e.g.
+ * <div data-tonal-mode="fiction-c1"> inside a codex [slug] page) can scope
+ * the override to its own subtree without mutating the document-level body
+ * attribute. The root body still sets `data-tonal-mode="grounded"` in
+ * layout.tsx; nested overrides shadow it because CSS custom properties
+ * inherit, and a nested element redeclaring a custom property wins for
+ * itself and its descendants.
+ *
+ * See visual-identity.md §Tonal modes.
  * Anything not overridden falls back to the base tokens above.
  * ------------------------------------------------------------------------- */
 
-body[data-tonal-mode="fiction-c1"] {
+[data-tonal-mode="fiction-c1"] {
   --accent-cyan: #22e5ff;      /* unchanged, but kept here for future shift */
   --accent-magenta: #ff2fa3;
   --accent-amber: #ffb347;
 }
 
-body[data-tonal-mode="fiction-c2"] {
+[data-tonal-mode="fiction-c2"] {
   /* c2 (Cyber Vikings / off-grid raider canon) — push amber forward */
   --accent-cyan: #8efaff;
   --accent-amber: #ff9a1f;
 }
 
-body[data-tonal-mode="warning"] {
+[data-tonal-mode="warning"] {
   --accent-cyan: #ffb347;
 }
 
