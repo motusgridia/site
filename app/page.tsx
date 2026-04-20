@@ -40,6 +40,7 @@
 // (e.g. `text-[0.625rem]`) are used sparingly for one-off geometry.
 
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { SubscribeForm } from "@/app/components/SubscribeForm";
 import { SOCIAL_ICON_BY_INITIAL } from "@/app/components/SocialIcons";
@@ -61,15 +62,29 @@ const TEASER_PARAGRAPH_1 =
 const TEASER_PARAGRAPH_2 =
   "One day the first Grid gets built — on this planet or another — and everyone stands in awe of it and wants to live inside one. The desire runs so strong that the first becomes the second, the second becomes the tenth, and a network of Grids ends up covering a planet. A society fixated on growing the Grid Network of connection, unity and harmony."; // § 3
 
-type Tile = { title: string; subLabel: string };
+type Tile = { title: string; subLabel: string; href: string };
 const TILES: Tile[] = [
   // § 4 — exact strings, ordered Manifesto / Codex / Logs.
-  { title: "MANIFESTO", subLabel: "The blueprint, chapter by chapter. Soon." },
+  //
+  // v0.2: the "Soon." tail has been dropped from each subLabel now that every
+  // section is populated. Tiles are wrapped in <Link> so the tile itself is
+  // the click target — matches /site/CLAUDE.md § Component rules (hex DNA
+  // carries meaning; a tile is a portal into a Grid, not decoration).
+  {
+    title: "MANIFESTO",
+    subLabel: "The blueprint, chapter by chapter.",
+    href: "/manifesto",
+  },
   {
     title: "CODEX",
-    subLabel: "Every concept, faction, place, technology — indexed. Soon.",
+    subLabel: "Every concept, faction, place, technology — indexed.",
+    href: "/codex",
   },
-  { title: "LOGS", subLabel: "The build, written as it happens. Soon." },
+  {
+    title: "LOGS",
+    subLabel: "The build, written as it happens.",
+    href: "/logs",
+  },
 ];
 
 type Social = {
@@ -146,12 +161,14 @@ export default function HomePage() {
   return (
     <>
       {/* HERO ----------------------------------------------------------- */}
-      {/* v0.1 has no nav header (per /landing-page-playbook.md), so the
-          hero claims the full viewport. When the persistent nav lands in
-          v0.2, swap to `min-h-[calc(100dvh-var(--header-h))]`. */}
+      {/* v0.2 adds the persistent nav (see app/layout.tsx), which sits sticky
+          at the top with ~56px height (py-4 + content + border). Subtract
+          that from 100dvh so the wordmark still centres cleanly underneath.
+          Using `calc(100dvh-3.5rem)` instead of a CSS custom property keeps
+          this self-contained — no additional token churn in globals.css. */}
       <section
         aria-labelledby="wordmark"
-        className="hero-static relative flex min-h-[100dvh] flex-col items-center justify-center px-6 py-24"
+        className="hero-static relative flex min-h-[calc(100dvh-3.5rem)] flex-col items-center justify-center px-6 py-24"
       >
         {/* Hex glyphs left/right per § 1 — small, cyan, 0.6 alpha, ~20% of
             wordmark height. aria-hidden because they're decorative. */}
@@ -210,14 +227,18 @@ export default function HomePage() {
         >
           {TILES.map((tile) => (
             <li key={tile.title}>
-              <article className="hex-tile">
-                <div className="flex flex-col items-center gap-3">
-                  <span className="mono-l text-accent-cyan">{tile.title}</span>
-                  <span className="max-w-[20ch] text-balance text-body-sm text-ink-mute">
-                    {tile.subLabel}
-                  </span>
-                </div>
-              </article>
+              <Link href={tile.href} className="group block">
+                <article className="hex-tile transition-[filter] duration-[var(--duration-fast)] ease-[var(--ease-technical)] group-hover:[filter:drop-shadow(0_0_16px_var(--glow-cyan))]">
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="mono-l text-accent-cyan">
+                      {tile.title}
+                    </span>
+                    <span className="max-w-[20ch] text-balance text-body-sm text-ink-mute transition-colors duration-[var(--duration-fast)] ease-[var(--ease-technical)] group-hover:text-ink-primary">
+                      {tile.subLabel}
+                    </span>
+                  </div>
+                </article>
+              </Link>
             </li>
           ))}
         </ul>

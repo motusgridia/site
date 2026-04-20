@@ -13,6 +13,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Fraunces, Geist_Mono } from "next/font/google";
 
+import { Nav } from "@/app/components/Nav";
 import "./globals.css";
 
 // ---------------------------------------------------------------------------
@@ -186,6 +187,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* Page-wide scanline overlay at 2% opacity. Auto-disabled in
             prefers-reduced-motion via globals.css. */}
         <div aria-hidden="true" className="scanlines" />
+
+        {/* Persistent site nav — sticky, backdrop-blur, sits above content on
+            every route. Hidden on the landing hero via CSS? No — the nav is
+            visible everywhere so the wordmark + section links are always
+            reachable. On /, the hero just pushes past it. */}
+        <Nav />
 
         <main id="main">{children}</main>
 
