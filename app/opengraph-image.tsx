@@ -25,6 +25,7 @@
 // The image regenerates on each deploy. No static .png asset is committed.
 
 import { ImageResponse } from "next/og";
+import type { ReactElement } from "react";
 
 export const runtime = "edge";
 export const size = { width: 1200, height: 630 };
@@ -267,7 +268,7 @@ function buildHoneycomb({
   strokeColor: string;
   strokeWidth: number;
 }) {
-  const rows: JSX.Element[] = [];
+  const rows: ReactElement[] = [];
   // Geometry for pointy-top hex on a flat-offset grid:
   //   dx between columns = r * sqrt(3)  ≈ r * 1.732
   //   dy between rows    = r * 1.5

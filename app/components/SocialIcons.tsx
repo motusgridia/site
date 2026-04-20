@@ -24,7 +24,7 @@
 // 100% width + height + preserveAspectRatio so the hex-frame's inner mask
 // crops them naturally.
 
-import type { SVGProps } from "react";
+import type { ReactElement, SVGProps } from "react";
 
 // ---------------------------------------------------------------------------
 // Shared props + wrapper
@@ -152,7 +152,7 @@ export function GitHubIcon(props: IconProps) {
 
 export const SOCIAL_ICON_BY_INITIAL: Record<
   string,
-  (props: IconProps) => JSX.Element
+  (props: IconProps) => ReactElement
 > = {
   BS: BlueskyIcon,
   SU: SubstackIcon,
