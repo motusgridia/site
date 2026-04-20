@@ -8,6 +8,7 @@
 // the network again.
 
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { getContentIndex } from "@/lib/content";
 import { CodexSearch } from "@/app/components/CodexSearch";
@@ -82,10 +83,23 @@ export default async function CodexIndexPage() {
               </p>
             </div>
           ) : (
-            <CodexSearch
-              entries={searchEntries}
-              typeCounts={idx.counts.by_codex_type}
-            />
+            // CodexSearch reads useSearchParams() at the top level. Next.js
+            // 15 requires any client component that calls useSearchParams()
+            // to render inside a Suspense boundary during static generation
+            // — otherwise `next build` fails with the CSR-bailout error.
+            // See: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+            <Suspense
+              fallback={
+                <div className="border border-line-soft bg-bg-panel p-10 text-center">
+                  <p className="mono text-ink-mute">Loading codex…</p>
+                </div>
+              }
+            >
+              <CodexSearch
+                entries={searchEntries}
+                typeCounts={idx.counts.by_codex_type}
+              />
+            </Suspense>
           )}
         </div>
       </div>
