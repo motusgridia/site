@@ -11,6 +11,7 @@
     "lint": "next lint",
     "build:content": "tsx scripts/build-content-index.ts",
     "dev:content": "tsx watch scripts/build-content-index.ts",
+    "smoke": "tsx scripts/post-deploy-smoke.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
