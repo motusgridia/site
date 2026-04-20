@@ -193,6 +193,58 @@ async function checkSubscribeDegraded(base: string): Promise<CheckResult> {
 }
 
 /**
+ * v0.2 content route checks — each page must render HTML, include its
+ * canonical link, and contain a stable content substring proving the page
+ * template actually executed rather than returning a bare 200 + empty body
+ * (the Next 15 `generateMetadata` failure mode). The substrings are picked
+ * to be stable copy from the PageHeader title, so a template break would
+ * show up here as a missing-substring failure even if the response is 200.
+ */
+function htmlCheck(
+  path: string,
+  mustInclude: string[],
+): Check["run"] {
+  return async (base) => {
+    const res = await fetch(`${base}${path}${bust()}`);
+    if (res.status !== 200)
+      return { ok: false, detail: `status ${res.status}` };
+    const html = await res.text();
+    const missing = mustInclude.filter((s) => !html.includes(s));
+    if (missing.length > 0)
+      return {
+        ok: false,
+        detail: `missing substring(s): ${missing.join(", ")}`,
+      };
+    return { ok: true, detail: `${html.length} bytes` };
+  };
+}
+
+/**
+ * Sitemap must list the v0.2 pillars. Guards the regression where
+ * content-index.json is missing at build time and sitemap.ts silently
+ * falls back to just the static six URLs.
+ */
+async function checkSitemapPillars(base: string): Promise<CheckResult> {
+  const res = await fetch(`${base}/sitemap.xml${bust()}`);
+  if (res.status !== 200) return { ok: false, detail: `status ${res.status}` };
+  const body = await res.text();
+  const required = [
+    "/manifesto",
+    "/codex",
+    "/logs",
+    "/about",
+    "/contact",
+  ];
+  const missing = required.filter((p) => !body.includes(`<loc>https://motusgridia.com${p}</loc>`));
+  if (missing.length > 0)
+    return {
+      ok: false,
+      detail: `missing pillar URLs: ${missing.join(", ")}`,
+    };
+  return { ok: true, detail: `all ${required.length} pillars present` };
+}
+
+/**
  * www.motusgridia.com must 308-redirect to the apex. Catches the class
  * of regression where the redirect flips direction (apex → www) or where
  * someone accidentally sets it to 307/302 (non-permanent → search engines
@@ -238,12 +290,61 @@ const CHECKS: Check[] = [
   { name: "GET /robots.txt      (valid directives)", run: checkRobots },
   { name: "GET /sitemap.xml     (apex URL indexed)", run: checkSitemap },
   {
+    name: "GET /sitemap.xml     (v0.2 pillars listed)",
+    run: checkSitemapPillars,
+  },
+  {
     name: "POST /api/subscribe  (graceful 503 pre-Resend)",
     run: checkSubscribeDegraded,
   },
   {
     name: "GET www → apex       (308 permanent redirect)",
     run: checkWwwRedirect,
+  },
+
+  // --- v0.2 content routes ------------------------------------------------
+  // Each check asserts: (a) 200 status, (b) the canonical link tag (so
+  // generateMetadata actually executed rather than returning a bare shell),
+  // (c) at least one stable copy substring proving the PageHeader title
+  // rendered. Substrings are picked verbatim from app/<route>/page.tsx.
+
+  {
+    name: "GET /manifesto       (index + canonical)",
+    run: htmlCheck("/manifesto", [
+      'rel="canonical"',
+      "/manifesto",
+    ]),
+  },
+  {
+    name: "GET /codex           (index + canonical)",
+    run: htmlCheck("/codex", [
+      'rel="canonical"',
+      "/codex",
+    ]),
+  },
+  {
+    name: "GET /logs            (index + canonical)",
+    run: htmlCheck("/logs", [
+      'rel="canonical"',
+      "/logs",
+      "The build, written as it happens",
+    ]),
+  },
+  {
+    name: "GET /about           (copy + canonical)",
+    run: htmlCheck("/about", [
+      'rel="canonical"',
+      "/about",
+      "A blueprint, a movement, and a diary",
+    ]),
+  },
+  {
+    name: "GET /contact         (copy + canonical)",
+    run: htmlCheck("/contact", [
+      'rel="canonical"',
+      "/contact",
+      "Get in touch",
+    ]),
   },
 ];
 
