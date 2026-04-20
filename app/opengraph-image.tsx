@@ -37,9 +37,11 @@ export const alt =
   "MotusGridia — cyan honeycomb on indigo, wordmark MOTVSGRIDIA centred";
 
 // Tokens — inlined because next/og cannot read :root CSS variables.
+// Only tokens actually used in this route are declared; BG_PANEL is not
+// inlined because the OG image background is BG_DEEP only.
 const BG_DEEP = "#07090D";
-const BG_PANEL = "#0B1030";
 const INK_PRIMARY = "#E8ECF5";
+const INK_MUTE = "#7E89A8";
 const ACCENT_CYAN = "#22E5FF";
 const LINE_SOFT = "#1A2240";
 
@@ -207,7 +209,7 @@ export default async function OpengraphImage() {
             fontSize: 18,
             letterSpacing: "0.24em",
             textTransform: "uppercase",
-            color: BG_PANEL === BG_DEEP ? INK_PRIMARY : "#7E89A8",
+            color: INK_MUTE,
             fontFamily: "monospace",
             zIndex: 1,
           }}
