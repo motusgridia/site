@@ -65,6 +65,18 @@ const WORDMARK = "MOTVSGRIDIA"; // Latin V per /landing-copy-v0.1.md § 1.
 // ---------------------------------------------------------------------------
 
 async function loadFraunces(): Promise<ArrayBuffer | null> {
+  // 4-second total budget across the CSS fetch + TTF fetch pair. Next.js
+  // pre-renders file-based metadata routes at build time — including this
+  // one, even with `runtime = "edge"` (the edge runtime applies to request-
+  // time regeneration, not build-time pre-render). Without a timeout, a slow
+  // Google Fonts response would stall `next build` indefinitely, which is
+  // how every v0.2 deploy between 2026-04-20 14:30Z and fdbde5d rolled back
+  // to the pre-v0.2 baseline without a visible error. See SESSION-HANDOFF.md
+  // § "Session 5d correction — the FOURTH build blocker was the root OG
+  // route" for the post-mortem. Budget matches the sibling per-slug routes
+  // in /codex/[slug]/opengraph-image.tsx.
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 4000);
   try {
     const cssRes = await fetch(
       // 144 opsz + 600 wght matches the display-1 token in globals.css.
@@ -76,6 +88,7 @@ async function loadFraunces(): Promise<ArrayBuffer | null> {
           // Satori (see comment above).
           "User-Agent": "Wget/1.21",
         },
+        signal: ctrl.signal,
       },
     );
     if (!cssRes.ok) return null;
@@ -87,11 +100,13 @@ async function loadFraunces(): Promise<ArrayBuffer | null> {
     const fontUrl = match?.[1];
     if (!fontUrl) return null;
 
-    const fontRes = await fetch(fontUrl);
+    const fontRes = await fetch(fontUrl, { signal: ctrl.signal });
     if (!fontRes.ok) return null;
     return await fontRes.arrayBuffer();
   } catch {
     return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
