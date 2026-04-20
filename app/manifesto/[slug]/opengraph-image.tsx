@@ -23,6 +23,18 @@ export const contentType = "image/png";
 export const alt =
   "Motus Gridia manifesto entry — cyan honeycomb lattice on deep indigo with title wordmark centred";
 
+// Render on-demand, NOT at build time. See the twin comment in
+// `app/codex/[slug]/opengraph-image.tsx` for the full post-mortem — TL;DR:
+// the sibling `page.tsx`'s `generateStaticParams()` would otherwise make
+// Next.js pre-render one PNG per manifesto slug at build time, each calling
+// `loadFraunces()` with an unbounded Google Fonts fetch, which hung Vercel's
+// build for 75+ min. Empty array means "no build-time pre-render for this
+// file" — the PNG renders on first crawler hit and is cached by Vercel's
+// edge for all subsequent requests.
+export async function generateStaticParams() {
+  return [];
+}
+
 // Tokens (inlined — next/og can't read :root CSS variables).
 const BG_DEEP = "#07090D";
 const INK_PRIMARY = "#E8ECF5";
@@ -31,10 +43,16 @@ const ACCENT_CYAN = "#22E5FF";
 const LINE_SOFT = "#1A2240";
 
 async function loadFraunces(): Promise<ArrayBuffer | null> {
+  // 4-second total budget across the CSS fetch + TTF fetch pair — defense in
+  // depth against Google Fonts stalling a Node-runtime OG route. If either
+  // leg is slow, abort and fall back to the system serif; better a slightly
+  // off-brand OG than an indefinitely open socket on a social crawler hit.
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 4000);
   try {
     const cssRes = await fetch(
       "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@144,600&display=swap",
-      { headers: { "User-Agent": "Wget/1.21" } },
+      { headers: { "User-Agent": "Wget/1.21" }, signal: ctrl.signal },
     );
     if (!cssRes.ok) return null;
     const css = await cssRes.text();
@@ -43,11 +61,13 @@ async function loadFraunces(): Promise<ArrayBuffer | null> {
     );
     const fontUrl = match?.[1];
     if (!fontUrl) return null;
-    const fontRes = await fetch(fontUrl);
+    const fontRes = await fetch(fontUrl, { signal: ctrl.signal });
     if (!fontRes.ok) return null;
     return await fontRes.arrayBuffer();
   } catch {
     return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 

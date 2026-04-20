@@ -23,6 +23,23 @@ export const contentType = "image/png";
 export const alt =
   "Motus Gridia codex entry — cyan honeycomb lattice on deep indigo with title wordmark centred";
 
+// Render on-demand, NOT at build time. The sibling `page.tsx` exports
+// `generateStaticParams()` which pre-renders every codex slug — without the
+// empty override below, Next.js would pre-render one PNG per slug at build
+// time, and each one calls `loadFraunces()` (two unbounded fetches to Google
+// Fonts). 28+ codex slugs × 2 sequential fetches with no timeout = build
+// hangs indefinitely, never fails with a visible error, never promotes a new
+// deploy. See SESSION-HANDOFF.md § "Session 5b correction — the REAL build
+// blocker was not Suspense" for the 75-minute hang post-mortem.
+//
+// Returning `[]` tells Next.js "for this specific file (the OG image), don't
+// pre-generate any params" — the PNG renders on first request and is cached
+// by Vercel's edge for every subsequent hit. Share-card warmup is handled by
+// social crawlers, not the build.
+export async function generateStaticParams() {
+  return [];
+}
+
 // Tokens (inlined — next/og can't read :root CSS variables).
 const BG_DEEP = "#07090D";
 const INK_PRIMARY = "#E8ECF5";
@@ -32,10 +49,17 @@ const ACCENT_AMBER = "#FFB347";
 const LINE_SOFT = "#1A2240";
 
 async function loadFraunces(): Promise<ArrayBuffer | null> {
+  // Defense in depth — even with `generateStaticParams() => []` above, we
+  // guard against a slow Google Fonts response at request time. 4-second
+  // total budget across the CSS fetch + TTF fetch pair; fall back to the
+  // system serif if either leg stalls. Better to ship a slightly-off-brand
+  // OG than to leave a social crawler holding an open socket.
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 4000);
   try {
     const cssRes = await fetch(
       "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@144,600&display=swap",
-      { headers: { "User-Agent": "Wget/1.21" } },
+      { headers: { "User-Agent": "Wget/1.21" }, signal: ctrl.signal },
     );
     if (!cssRes.ok) return null;
     const css = await cssRes.text();
@@ -44,11 +68,13 @@ async function loadFraunces(): Promise<ArrayBuffer | null> {
     );
     const fontUrl = match?.[1];
     if (!fontUrl) return null;
-    const fontRes = await fetch(fontUrl);
+    const fontRes = await fetch(fontUrl, { signal: ctrl.signal });
     if (!fontRes.ok) return null;
     return await fontRes.arrayBuffer();
   } catch {
     return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
