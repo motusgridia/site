@@ -8,10 +8,16 @@
 // heaviness of a full hex-frame. Canon badge uses a single dot — cyan for
 // grounded, amber for fiction — the amber flag is the "fiction is
 // imagination, keep it clearly marked" signal from the visual-identity doc.
+//
+// This file intentionally has NO `"use client"` directive and imports NOTHING
+// from `lib/content` — it's a universal leaf component that can be rendered
+// from either server or client parents. Pulling labels from `lib/content`
+// (which `import "server-only"`) used to poison the client bundle of
+// CodexSearch and hard-fail `next build`. The two label records below are the
+// source of truth for UI-facing strings; the server-side copies in
+// `lib/content.ts` kept for convenience in server components mirror them.
 
 import type { ReactNode } from "react";
-
-import { CANON_LABEL, CODEX_TYPE_LABEL } from "@/lib/content";
 
 type CodexType =
   | "concept"
@@ -23,6 +29,25 @@ type CodexType =
   | "event";
 
 type Canon = "grounded" | "fiction-c1" | "fiction-c2";
+
+// Keep these two records in sync with `lib/content.ts` (CODEX_TYPE_LABEL /
+// CANON_LABEL) — they are the same strings, duplicated here so this file has
+// zero server-only dependencies.
+const CODEX_TYPE_LABEL: Record<CodexType, string> = {
+  concept: "Concept",
+  infrastructure: "Infrastructure",
+  technology: "Technology",
+  faction: "Faction",
+  character: "Character",
+  place: "Place",
+  event: "Event",
+};
+
+const CANON_LABEL: Record<Canon, string> = {
+  grounded: "Grounded",
+  "fiction-c1": "Fiction · C1",
+  "fiction-c2": "Fiction · C2",
+};
 
 // ---------------------------------------------------------------------------
 // Per-type hex-based glyph. 2px stroke, no fill, currentColor to inherit
