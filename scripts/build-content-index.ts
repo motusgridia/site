@@ -40,8 +40,10 @@ import type {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const SITE_ROOT = join(__dirname, "..");
-const REPO_ROOT = join(SITE_ROOT, "..");
-const CONTENT_ROOT = join(REPO_ROOT, "content");
+// Content lives inside the site repo (moved from /grid/content/ so Vercel
+// can find it inside the build sandbox — the git repo boundary is /site/,
+// not /grid/, so ../content/ is outside the checkout at deploy time).
+const CONTENT_ROOT = join(SITE_ROOT, "content");
 const PUBLIC_DIR = join(SITE_ROOT, "public");
 const OUT = join(PUBLIC_DIR, "content-index.json");
 
@@ -88,7 +90,7 @@ async function loadEntries<T>(
     try {
       parsed = schema.parse(data);
     } catch (err) {
-      const relative = file.replace(REPO_ROOT + "/", "");
+      const relative = file.replace(SITE_ROOT + "/", "");
       console.error(
         `[content-index] schema violation in ${relative}:\n${formatZodError(err)}`,
       );
@@ -344,7 +346,7 @@ async function main() {
 
   const duration = Date.now() - start;
   console.log(
-    `[content-index] wrote ${OUT.replace(REPO_ROOT + "/", "")}`,
+    `[content-index] wrote ${OUT.replace(SITE_ROOT + "/", "")}`,
   );
   console.log(
     `[content-index]   ${index.counts.manifesto} manifesto, ${index.counts.codex} codex, ${index.counts.logs} logs — ${duration}ms`,
