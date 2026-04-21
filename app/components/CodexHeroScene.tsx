@@ -59,6 +59,7 @@ import {
   type CodexHeroProps,
 } from "./codex-scenes/shared";
 import { AdvancedMaterials } from "./codex-scenes/advanced-materials";
+import { AdvancedPcsInWalls } from "./codex-scenes/advanced-pcs-in-walls";
 import { AlienEmpire } from "./codex-scenes/alien-empire";
 import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
@@ -79,8 +80,10 @@ import { GridLawTeams } from "./codex-scenes/grid-law-teams";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { LiveStreamedScience } from "./codex-scenes/live-streamed-science";
 import { Modularity } from "./codex-scenes/modularity";
+import { NeutralZoneMilitia } from "./codex-scenes/neutral-zone-militia";
 import { NorthernDominion } from "./codex-scenes/northern-dominion";
 import { Optionism } from "./codex-scenes/optionism";
+import { PrintedVillages } from "./codex-scenes/printed-villages";
 import { Revolt13 } from "./codex-scenes/revolt-13";
 import { TemporaryResidence } from "./codex-scenes/temporary-residence";
 import { TetherUpgradeTech } from "./codex-scenes/tether-upgrade-tech";
@@ -1678,6 +1681,12 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <BioengineeredTribes canon={canon} />;
     case "flight":
       return <Flight canon={canon} />;
+    case "advanced-pcs-in-walls":
+      return <AdvancedPcsInWalls canon={canon} />;
+    case "printed-villages":
+      return <PrintedVillages canon={canon} />;
+    case "neutral-zone-militia":
+      return <NeutralZoneMilitia canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1836,6 +1845,18 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Aircraft at altitudes y ∈ [0.8, 1.6] orbiting at radii up
         // to 2.6 — camera needs to see the lift, not just the plate.
         return [0, 2.2, 7];
+      case "advanced-pcs-in-walls":
+        // Walls at radius 1.65 at y=0.35 + hubs at y=0.72. Slightly
+        // higher camera so the hub plane reads above the wall plane.
+        return [0, 2.6, 6.8];
+      case "printed-villages":
+        // Five homes on a plate plus a silo at [2.1, _, -1.9]. Wider
+        // frame so the silo sits inside the shot with the village.
+        return [0, 3, 7];
+      case "neutral-zone-militia":
+        // Hideout at centre, wolves at radius 1.35, assassins at
+        // radius 2.7 — wide frame so all three radii read at once.
+        return [0, 2.6, 7.4];
       default:
         return [0, 2, 6];
     }
