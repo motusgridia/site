@@ -96,6 +96,7 @@ import { HoneycombArchitecture } from "./codex-scenes/honeycomb-architecture";
 import { Hubs } from "./codex-scenes/hubs";
 import { KafiristanPact } from "./codex-scenes/kafiristan-pact";
 import { LiveStreamedScience } from "./codex-scenes/live-streamed-science";
+import { Magway } from "./codex-scenes/magway";
 import { MediaProductionTech } from "./codex-scenes/media-production-tech";
 import { Modularity } from "./codex-scenes/modularity";
 import { NanoCamBullets } from "./codex-scenes/nano-cam-bullets";
@@ -136,66 +137,10 @@ export type { CodexHeroProps };
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// Scene: Magway — translucent tube cross-section with a pod travelling
-// through it. The tube extends off-frame on both ends to signal the
-// "underground artery" nature of the system.
-// ---------------------------------------------------------------------------
-
-function MagwayTube({ canon }: { canon: CodexHeroProps["canon"] }) {
-  const podRef = useRef<THREE.Mesh>(null);
-  const emissive = canonColour(canon);
-
-  useFrame((state) => {
-    const pod = podRef.current;
-    if (!pod) return;
-    // Pod travels along X, loops every 4.5 seconds.
-    const t = (state.clock.elapsedTime * 1.8) % 14;
-    pod.position.x = -7 + t;
-  });
-
-  return (
-    <group>
-      {/* Tube — a long cylinder rotated to run along X. Double-sided so we
-          see both inner and outer walls when it clips the camera frustum. */}
-      <mesh rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[1.1, 1.1, 14, 32, 1, true]} />
-        <meshStandardMaterial
-          color="#0b1030"
-          emissive={emissive}
-          emissiveIntensity={0.12}
-          metalness={0.5}
-          roughness={0.5}
-          side={THREE.DoubleSide}
-          transparent
-          opacity={0.35}
-        />
-      </mesh>
-
-      {/* Inner cyan rail — pulses with the pod. */}
-      <mesh rotation={[0, 0, Math.PI / 2]} position={[0, -0.9, 0]}>
-        <cylinderGeometry args={[0.05, 0.05, 14, 12]} />
-        <meshStandardMaterial
-          color={emissive}
-          emissive={emissive}
-          emissiveIntensity={1.2}
-        />
-      </mesh>
-
-      {/* Pod — elongated pill, emissive front face so direction-of-travel
-          reads at a glance. */}
-      <mesh ref={podRef} rotation={[0, 0, Math.PI / 2]}>
-        <capsuleGeometry args={[0.45, 1.4, 8, 16]} />
-        <meshStandardMaterial
-          color="#0b1030"
-          emissive={emissive}
-          emissiveIntensity={0.9}
-          metalness={0.6}
-          roughness={0.3}
-        />
-      </mesh>
-    </group>
-  );
-}
+// Scene: Magway — promoted to `./codex-scenes/magway.tsx`. The inline
+// MagwayTube was a single pod in a tube. The module version carries a
+// three-pod fleet, station rings that admit each pod in turn, and
+// terminal hexes at either end.
 
 // ---------------------------------------------------------------------------
 // Scene: Hubs — vertical megastructure. A stack of hex prisms growing up,
@@ -1391,7 +1336,7 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
     case "grid-network":
       return <GridNetwork canon={canon} />;
     case "magway":
-      return <MagwayTube canon={canon} />;
+      return <Magway canon={canon} />;
     case "hubs":
       return <Hubs canon={canon} />;
     case "grid-domes":
