@@ -50,9 +50,9 @@ const geistMono = Geist_Mono({
 
 const SITE_URL = "https://motusgridia.com";
 const SITE_NAME = "Motus Gridia";
-const TITLE = "Motus Gridia — A blueprint for a society worth waking up in.";
+const TITLE = "Motus Gridia — A blueprint for The Grid Network.";
 const DESCRIPTION =
-  "A blueprint for a society worth waking up in. The Grid Network — a movement, a codex, a diary in real time. Join the wall before the first Grid is built.";
+  "A new societal system built around self-governing hexagonal communities. A movement, a codex, a diary in real time. Join the wall before the first Grid is built.";
 const OG_DESCRIPTION =
   "The Grid Network. A movement, a codex, a diary in real time. Join the wall before the first Grid is built.";
 const TWITTER_DESCRIPTION =
@@ -142,7 +142,7 @@ const organizationJsonLd = {
   // JSON-LD — the hash rolls every time the file changes. When a stable
   // /public/logo.png ships with the brand-asset task, restore this field.
   description:
-    "A blueprint for a society worth waking up in. The Grid Network — a movement, a codex, a diary in real time.",
+    "A new societal system built around self-governing hexagonal communities. A movement, a codex, a diary in real time.",
   founder: {
     "@type": "Person",
     name: "Shaan Khan",
