@@ -60,6 +60,7 @@ import {
 } from "./codex-scenes/shared";
 import { AdvancedMaterials } from "./codex-scenes/advanced-materials";
 import { AdvancedPcsInWalls } from "./codex-scenes/advanced-pcs-in-walls";
+import { AlienBacterium } from "./codex-scenes/alien-bacterium";
 import { AlienEmpire } from "./codex-scenes/alien-empire";
 import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
@@ -67,6 +68,7 @@ import { AwolAndroids } from "./codex-scenes/awol-androids";
 import { BaseCamps } from "./codex-scenes/base-camps";
 import { BioengineeredTribes } from "./codex-scenes/bioengineered-tribes";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
+import { BountyGameMap } from "./codex-scenes/bounty-game-map";
 import { ChildProtection } from "./codex-scenes/child-protection";
 import { CybertalibanTribe } from "./codex-scenes/cybertaliban-tribe";
 import { DarkContinent } from "./codex-scenes/dark-continent";
@@ -86,6 +88,7 @@ import { MediaProductionTech } from "./codex-scenes/media-production-tech";
 import { Modularity } from "./codex-scenes/modularity";
 import { NeutralZoneMilitia } from "./codex-scenes/neutral-zone-militia";
 import { NorthernDominion } from "./codex-scenes/northern-dominion";
+import { OffGridMegacities } from "./codex-scenes/off-grid-megacities";
 import { Optionism } from "./codex-scenes/optionism";
 import { PhilosophersPact } from "./codex-scenes/philosophers-pact";
 import { PlasmaCrystalSwords } from "./codex-scenes/plasma-crystal-swords";
@@ -1705,6 +1708,12 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <BaseCamps canon={canon} />;
     case "plasma-crystal-swords":
       return <PlasmaCrystalSwords canon={canon} />;
+    case "alien-bacterium":
+      return <AlienBacterium canon={canon} />;
+    case "off-grid-megacities":
+      return <OffGridMegacities canon={canon} />;
+    case "bounty-game-map":
+      return <BountyGameMap canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1901,6 +1910,19 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Two blades side-by-side at y up to ~1.8 — closer frame
         // so the plasma channel inside the crystal reads clearly.
         return [0, 2.2, 5.6];
+      case "alien-bacterium":
+        // Hemispheric cloud at y ~ 0.4-1.6, projectile arcs across
+        // plate — slight pullback so the hive-ring pulses read.
+        return [0, 2.4, 7];
+      case "off-grid-megacities":
+        // Tallest tower h=2.6 (top at y=2.6); cluster spans ~3 in
+        // XZ. Lift and pull back to read the skyline as a skyline.
+        return [0, 3.2, 7.8];
+      case "bounty-game-map":
+        // Flat 5x7 district grid plus the app-frame header at
+        // y=1.55. Camera lift reads the grid top-downish without
+        // losing the floating header.
+        return [0, 3.0, 6.2];
       default:
         return [0, 2, 6];
     }
