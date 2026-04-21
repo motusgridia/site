@@ -58,6 +58,7 @@ import {
   HexPrism,
   type CodexHeroProps,
 } from "./codex-scenes/shared";
+import { AdvancedMaterials } from "./codex-scenes/advanced-materials";
 import { AlienEmpire } from "./codex-scenes/alien-empire";
 import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
@@ -1645,6 +1646,8 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <DjPanz canon={canon} />;
     case "northern-dominion":
       return <NorthernDominion canon={canon} />;
+    case "advanced-materials":
+      return <AdvancedMaterials canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1756,6 +1759,10 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Clan ring at radius 2.3, lab buried at y=-0.25, subjects
         // orbiting low — camera angled to show all three layers.
         return [0, 3, 7.2];
+      case "advanced-materials":
+        // Crystal at y=0.55, Tesla nodes at radius 1.9 mid-ring —
+        // default-depth camera reads the transfer ring cleanly.
+        return [0, 2.4, 6.8];
       default:
         return [0, 2, 6];
     }
