@@ -55,9 +55,11 @@ import { AlienEmpire } from "./codex-scenes/alien-empire";
 import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
+import { ChildProtection } from "./codex-scenes/child-protection";
 import { Education } from "./codex-scenes/education";
 import { EHair } from "./codex-scenes/e-hair";
 import { EmergencyServices } from "./codex-scenes/emergency-services";
+import { GridLawTeams } from "./codex-scenes/grid-law-teams";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { Modularity } from "./codex-scenes/modularity";
 import { Optionism } from "./codex-scenes/optionism";
@@ -1611,6 +1613,10 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <EmergencyServices canon={canon} />;
     case "education":
       return <Education canon={canon} />;
+    case "grid-law-teams":
+      return <GridLawTeams canon={canon} />;
+    case "child-protection":
+      return <ChildProtection canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1686,6 +1692,14 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // camera needs a hair further back and centred slightly
         // forward to keep the teacher in frame.
         return [0, 2.6, 7];
+      case "grid-law-teams":
+        // Twelve-juror ring at radius 2.2 with heights up to y=1.5
+        // — pull back slightly so the ring reads as a full circle.
+        return [0, 2.6, 7.2];
+      case "child-protection":
+        // Six-hex outer ring at radius 2.6 plus motes trailing to
+        // rim along +X. Camera needs the wide frame.
+        return [0, 2.4, 7.2];
       default:
         return [0, 2, 6];
     }
