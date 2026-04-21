@@ -51,6 +51,7 @@ import {
   HexPrism,
   type CodexHeroProps,
 } from "./codex-scenes/shared";
+import { EHair } from "./codex-scenes/e-hair";
 import { Throne } from "./codex-scenes/throne";
 
 // Re-export the public type so existing pages/components importing
@@ -1578,6 +1579,8 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <BrokenComb canon={canon} />;
     case "alien-queen":
       return <Throne canon={canon} />;
+    case "e-hair":
+      return <EHair canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
