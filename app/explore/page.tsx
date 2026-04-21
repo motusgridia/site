@@ -67,12 +67,21 @@ export default async function ExplorePage() {
   // Narrow the content-index entry shape to what ExplorerScene consumes.
   // Keeping the type loose on the scene side means we don't drag server
   // schema imports into the client bundle.
+  //
+  // relatedSlugs feeds Explorer M2's cross-link edges. The scene walks
+  // every entry's relatedSlugs, collapses A→B and B→A into one edge, and
+  // renders a dashed line between the cells — dim by default, bright when
+  // either endpoint is hovered. The data already lives in
+  // `/public/content-index.json` under `graph.codex_out`, but we pull it
+  // off the codex[].related_codex field here because it's already in the
+  // per-entry record the page has in hand.
   const sceneEntries: ReadonlyArray<ExplorerEntry> = idx.codex.map((c) => ({
     slug: c.slug,
     title: c.title,
     type: CODEX_TYPE_LABEL[c.type] ?? c.type,
     canon: c.canon,
     summary: c.summary,
+    relatedSlugs: c.related_codex,
   }));
 
   // Group entries by type for the fallback grid.
@@ -89,7 +98,7 @@ export default async function ExplorePage() {
         <PageHeader
           eyebrow={<>Explore · {idx.codex.length} cells</>}
           title="The Grid Network, mapped."
-          deck="Every codex entry is a hex cell. Drag to orbit the lattice. Scroll to zoom. Click a cell to open its entry. Cyan cells are grounded blueprint. Amber cells sit in the fiction canon."
+          deck="Every codex entry is a hex cell. Lines between cells are cross-references. Hover a cell to light up its neighbourhood. Drag to orbit, scroll to zoom, click to open. Cyan is grounded blueprint, amber is fiction canon."
         />
       </div>
 

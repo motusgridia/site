@@ -26,7 +26,7 @@
 
 "use client";
 
-import { Html, OrbitControls } from "@react-three/drei";
+import { Html, Line, OrbitControls } from "@react-three/drei";
 import { Canvas, type ThreeEvent } from "@react-three/fiber";
 import {
   Bloom,
@@ -48,6 +48,8 @@ export type ExplorerEntry = {
   type: string; // CodexType enum, kept loose so we don't pull the server schema.
   canon: "grounded" | "fiction-c1" | "fiction-c2";
   summary: string;
+  /** Slugs this entry links OUT to (forward graph edges from content-index). */
+  relatedSlugs: ReadonlyArray<string>;
 };
 
 type Props = {
@@ -226,6 +228,21 @@ function Cell({ entry, position, isHovered, onClick, onHover }: CellProps) {
 // Grid — one cell per codex entry, laid out as a hex spiral.
 // ---------------------------------------------------------------------------
 
+// Edge represents a single cross-link in the graph. Stored with both slugs
+// so the hover filter can brighten edges touching the hovered cell.
+type Edge = {
+  from: readonly [number, number, number];
+  to: readonly [number, number, number];
+  fromSlug: string;
+  toSlug: string;
+};
+
+// Edge colours — matched to line-soft / accent-cyan from globals.css so the
+// graph reads in the same palette as the 2D UI. Idle = near-invisible
+// hairline; active = cyan glow when either endpoint is hovered.
+const EDGE_COLOR_IDLE = "#1a2240";
+const EDGE_COLOR_ACTIVE = "#22e5ff";
+
 function Grid({ entries }: Props) {
   const router = useRouter();
   const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
@@ -238,6 +255,47 @@ function Grid({ entries }: Props) {
       return { entry, position };
     });
   }, [entries]);
+
+  // slug → world position lookup used by the edge builder below. Separate
+  // memo so the lookup is stable across hover re-renders.
+  const positionBySlug = useMemo(() => {
+    const map = new Map<string, readonly [number, number, number]>();
+    for (const { entry, position } of cells) {
+      map.set(entry.slug, position);
+    }
+    return map;
+  }, [cells]);
+
+  // Compute unique edges once. `related_codex` is directional in the data
+  // model (A declares B as related), but for rendering we collapse A→B and
+  // B→A into one line so the visual graph doesn't draw doubled-up strokes.
+  // We key on the slug pair (lexicographic) so the dedupe is deterministic.
+  const edges = useMemo<ReadonlyArray<Edge>>(() => {
+    const seen = new Set<string>();
+    const list: Edge[] = [];
+    for (const { entry } of cells) {
+      const fromPos = positionBySlug.get(entry.slug);
+      if (!fromPos) continue;
+      for (const toSlug of entry.relatedSlugs) {
+        if (toSlug === entry.slug) continue; // no self-loops
+        const key =
+          entry.slug < toSlug
+            ? `${entry.slug}|${toSlug}`
+            : `${toSlug}|${entry.slug}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const toPos = positionBySlug.get(toSlug);
+        if (!toPos) continue; // target slug not in the current lattice
+        list.push({
+          from: fromPos,
+          to: toPos,
+          fromSlug: entry.slug,
+          toSlug,
+        });
+      }
+    }
+    return list;
+  }, [cells, positionBySlug]);
 
   // Restore the cursor when the scene unmounts — if a user clicks a cell,
   // navigation unmounts the Canvas before pointer-out fires, so the
@@ -261,6 +319,38 @@ function Grid({ entries }: Props) {
 
   return (
     <group>
+      {/* Edges render BEFORE cells so cells paint on top. Edges float a
+          hair above the cell tops (y = HEX_DEPTH / 2 + 0.01) so they
+          don't z-fight with the hex cap and so they read as "wires
+          bridging cell to cell" rather than "shadows on the ground". */}
+      {edges.map((edge) => {
+        const active =
+          hoveredSlug !== null &&
+          (edge.fromSlug === hoveredSlug || edge.toSlug === hoveredSlug);
+        // When nothing is hovered: all edges render at idle (whisper).
+        // When something is hovered: touching edges brighten, the rest
+        // dim further so the graph reads "this cell's neighbourhood".
+        const opacity = active ? 0.85 : hoveredSlug === null ? 0.22 : 0.06;
+        const width = active ? 2 : 1;
+        const y = HEX_DEPTH / 2 + 0.01;
+        return (
+          <Line
+            key={`${edge.fromSlug}|${edge.toSlug}`}
+            points={[
+              [edge.from[0], edge.from[1] + y, edge.from[2]],
+              [edge.to[0], edge.to[1] + y, edge.to[2]],
+            ]}
+            color={active ? EDGE_COLOR_ACTIVE : EDGE_COLOR_IDLE}
+            lineWidth={width}
+            transparent
+            opacity={opacity}
+            dashed={!active}
+            dashSize={0.22}
+            gapSize={0.14}
+          />
+        );
+      })}
+
       {cells.map(({ entry, position }) => (
         <Cell
           key={entry.slug}
