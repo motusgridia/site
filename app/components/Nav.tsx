@@ -14,14 +14,18 @@ type NavItem = {
   label: string;
 };
 
-// Order locked by site-ia.md + /sim project directive (session 6). The Sim
-// is the public collaboration call for the 3D MMO simulation of the Grid;
-// it sits between Logs and About so a visitor reading the build-in-public
-// diary naturally lands on the call for game-dev collaborators next.
+// Order locked by site-ia.md + /sim project directive (session 6) +
+// /explore 3D-space directive (session 7). Explore sits directly after
+// Codex because it's the visual view of the same entries — a visitor
+// scanning the horizontal nav naturally sees "Codex · Explore" as the
+// two entry points to the same dataset (list vs 3D map). The Sim sits
+// between Logs and About so a visitor reading the build-in-public diary
+// naturally lands on the call for game-dev collaborators next.
 // Lore / Join / Events / Invest are deferred to v0.3+, not linked yet.
 const ITEMS: NavItem[] = [
   { href: "/manifesto", label: "Manifesto" },
   { href: "/codex", label: "Codex" },
+  { href: "/explore", label: "Explore" },
   { href: "/logs", label: "Logs" },
   { href: "/sim", label: "The Sim" },
   { href: "/about", label: "About" },
