@@ -26,7 +26,8 @@
 //     blueprint-trade, augmented-reality, grids-platform, asteroid-mining,
 //     optionism, vr-technology, emergency-services, education,
 //     grid-law-teams, child-protection, vargas-model,
-//     degarido-architecture, dreamgirl, the-saviour, vader, dj-panz.
+//     degarido-architecture, dreamgirl, the-saviour, vader, dj-panz,
+//     northern-dominion.
 //
 // Split pattern: new scenes land under `app/components/codex-scenes/<slug>.tsx`
 // and import primitives from `./codex-scenes/shared`. The older inline
@@ -71,6 +72,7 @@ import { EmergencyServices } from "./codex-scenes/emergency-services";
 import { GridLawTeams } from "./codex-scenes/grid-law-teams";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { Modularity } from "./codex-scenes/modularity";
+import { NorthernDominion } from "./codex-scenes/northern-dominion";
 import { Optionism } from "./codex-scenes/optionism";
 import { TheSaviour } from "./codex-scenes/the-saviour";
 import { Throne } from "./codex-scenes/throne";
@@ -1641,6 +1643,8 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <Vader canon={canon} />;
     case "dj-panz":
       return <DjPanz canon={canon} />;
+    case "northern-dominion":
+      return <NorthernDominion canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1748,6 +1752,10 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Author set back at z=-1.6, audience arc at radius 2.4 —
         // camera slightly raised to read the z-depth ordering.
         return [0, 2.6, 6.8];
+      case "northern-dominion":
+        // Clan ring at radius 2.3, lab buried at y=-0.25, subjects
+        // orbiting low — camera angled to show all three layers.
+        return [0, 3, 7.2];
       default:
         return [0, 2, 6];
     }
