@@ -62,6 +62,7 @@ import { AdvancedMaterials } from "./codex-scenes/advanced-materials";
 import { AdvancedPcsInWalls } from "./codex-scenes/advanced-pcs-in-walls";
 import { AlienBacterium } from "./codex-scenes/alien-bacterium";
 import { AlienEmpire } from "./codex-scenes/alien-empire";
+import { AlienParasites } from "./codex-scenes/alien-parasites";
 import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { AwolAndroids } from "./codex-scenes/awol-androids";
@@ -70,6 +71,7 @@ import { BioengineeredTribes } from "./codex-scenes/bioengineered-tribes";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { BountyGameMap } from "./codex-scenes/bounty-game-map";
 import { ChildProtection } from "./codex-scenes/child-protection";
+import { CustomsAndDuels } from "./codex-scenes/customs-and-duels";
 import { CybertalibanTribe } from "./codex-scenes/cybertaliban-tribe";
 import { DarkContinent } from "./codex-scenes/dark-continent";
 import { DegaridoArchitecture } from "./codex-scenes/degarido-architecture";
@@ -79,6 +81,7 @@ import { Education } from "./codex-scenes/education";
 import { EHair } from "./codex-scenes/e-hair";
 import { EmergencyServices } from "./codex-scenes/emergency-services";
 import { EnergyLevelBands } from "./codex-scenes/energy-level-bands";
+import { Fashion } from "./codex-scenes/fashion";
 import { Flight } from "./codex-scenes/flight";
 import { GhostHunters } from "./codex-scenes/ghost-hunters";
 import { GridLawTeams } from "./codex-scenes/grid-law-teams";
@@ -1714,6 +1717,12 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <OffGridMegacities canon={canon} />;
     case "bounty-game-map":
       return <BountyGameMap canon={canon} />;
+    case "alien-parasites":
+      return <AlienParasites canon={canon} />;
+    case "fashion":
+      return <Fashion canon={canon} />;
+    case "customs-and-duels":
+      return <CustomsAndDuels canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1923,6 +1932,20 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // y=1.55. Camera lift reads the grid top-downish without
         // losing the floating header.
         return [0, 3.0, 6.2];
+      case "alien-parasites":
+        // Host taller than usual (y up to ~1.35) with pupil mote and
+        // branches radiating out — closer frame so the spike flare
+        // reads and the failed-host sibling stays in frame.
+        return [0, 2.4, 6.2];
+      case "fashion":
+        // Three figures on a catwalk across x ~ -1.9 to +1.9, tallest
+        // at h=1.4 plus 0.35 identity pins — wider frame, slight lift.
+        return [0, 2.4, 6.8];
+      case "customs-and-duels":
+        // Arena plate radius 2.8, spectators at r=2.3, combatants
+        // orbit at r=1.3, judgement at y=1.6. Wide enough to show
+        // the whole tribal audience without losing the exchange.
+        return [0, 2.8, 7.4];
       default:
         return [0, 2, 6];
     }
