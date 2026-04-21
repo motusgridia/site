@@ -62,8 +62,10 @@ import { AdvancedMaterials } from "./codex-scenes/advanced-materials";
 import { AlienEmpire } from "./codex-scenes/alien-empire";
 import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
+import { AwolAndroids } from "./codex-scenes/awol-androids";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { ChildProtection } from "./codex-scenes/child-protection";
+import { CybertalibanTribe } from "./codex-scenes/cybertaliban-tribe";
 import { DarkContinent } from "./codex-scenes/dark-continent";
 import { DegaridoArchitecture } from "./codex-scenes/degarido-architecture";
 import { DjPanz } from "./codex-scenes/dj-panz";
@@ -1663,6 +1665,10 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <Revolt13 canon={canon} />;
     case "dark-continent":
       return <DarkContinent canon={canon} />;
+    case "cybertaliban-tribe":
+      return <CybertalibanTribe canon={canon} />;
+    case "awol-androids":
+      return <AwolAndroids canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1799,6 +1805,15 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Two planetary anchors at x = ±2.2 + mid-corridor — wide
         // frame needed to show both powers plus the rebel lane.
         return [0, 2.4, 7.8];
+      case "cybertaliban-tribe":
+        // Patriarch at centre + warrior ring at radius ~1.4 + tree
+        // silhouettes at x≈±2.5 — slight lift, moderate distance so
+        // the trees frame but don't crowd.
+        return [0, 2.4, 7];
+      case "awol-androids":
+        // Three distinct clusters at [-1.7,-0.9], [1.6,0.8], [0.1,1.6]
+        // — wide lifted frame so all three read at once.
+        return [0, 3.4, 6.8];
       default:
         return [0, 2, 6];
     }
