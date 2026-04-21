@@ -19,11 +19,14 @@
 //   honeycomb-architecture, grid-network, magway, hubs, grid-domes,
 //   basic-law, wireless-power, memory-metal, drone-delivery, illum,
 //   the-hive, bacterium-zones, alien-prince, eastern-grids, kafiristan,
-//   judgement-day, cyber-vikings, reward-banks, off-grid.
-// File passes 1600 lines — the NEXT scene addition MUST split this
-// catalogue into sibling modules under `app/components/codex-scenes/`
-// imported lazily from a slim dispatcher here. Do not grow this file
-// further without doing the split.
+//   judgement-day, cyber-vikings, reward-banks, off-grid, alien-queen.
+//
+// Split-in-progress: new scenes go in `app/components/codex-scenes/<name>.tsx`
+// and import shared primitives from `./codex-scenes/shared`. The older
+// inline scenes (everything before alien-queen) still live in this file
+// — they will migrate out as they receive updates, to avoid a big-bang
+// refactor. The Throne scene (alien-queen) is the first to land under
+// the new pattern.
 //
 // Camera framing is letterbox (4:1-ish) to match the surrounding banner
 // slot the scene replaces. Objects orbit in the XZ plane so the wide
@@ -42,79 +45,17 @@ import { BlendFunction } from "postprocessing";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
-// ---------------------------------------------------------------------------
-// Public type.
-// ---------------------------------------------------------------------------
+import {
+  canonColour,
+  canonFill,
+  HexPrism,
+  type CodexHeroProps,
+} from "./codex-scenes/shared";
+import { Throne } from "./codex-scenes/throne";
 
-export type CodexHeroProps = {
-  slug: string;
-  canon: "grounded" | "fiction-c1" | "fiction-c2";
-};
-
-// Tone resolver — matches CANON_ACCENT in lib/content.ts.
-function canonColour(canon: CodexHeroProps["canon"]): string {
-  switch (canon) {
-    case "grounded":
-      return "#22e5ff";
-    case "fiction-c1":
-      return "#ffb347";
-    case "fiction-c2":
-      return "#ff9a1f";
-  }
-}
-
-function canonFill(canon: CodexHeroProps["canon"]): string {
-  // Counter-light colour. Grounded scenes get an amber counter so fiction
-  // tones peek through; fiction scenes get a cyan counter so grounded
-  // infrastructure cues (honeycomb, magway) still read.
-  return canon === "grounded" ? "#ffb347" : "#22e5ff";
-}
-
-// ---------------------------------------------------------------------------
-// Shared hex-prism primitive — used by most scenes.
-// ---------------------------------------------------------------------------
-
-type HexPrismProps = {
-  position?: readonly [number, number, number];
-  rotation?: readonly [number, number, number];
-  radius?: number;
-  depth?: number;
-  color?: string;
-  emissive: string;
-  emissiveIntensity?: number;
-  scale?: number;
-};
-
-function HexPrism({
-  position = [0, 0, 0],
-  rotation = [0, Math.PI / 6, 0],
-  radius = 1,
-  depth = 0.22,
-  color = "#0b1030",
-  emissive,
-  emissiveIntensity = 0.3,
-  scale = 1,
-}: HexPrismProps) {
-  return (
-    <mesh
-      position={[position[0], position[1], position[2]]}
-      rotation={[rotation[0], rotation[1], rotation[2]]}
-      scale={scale}
-      frustumCulled={false}
-    >
-      {/* radialSegments=6 → exact hexagon. Pointy-top via π/6 Y rotation. */}
-      <cylinderGeometry args={[radius, radius, depth, 6, 1, false]} />
-      <meshStandardMaterial
-        color={color}
-        emissive={emissive}
-        emissiveIntensity={emissiveIntensity}
-        metalness={0.35}
-        roughness={0.45}
-        side={THREE.DoubleSide}
-      />
-    </mesh>
-  );
-}
+// Re-export the public type so existing pages/components importing
+// `CodexHeroProps` from this module keep working without churn.
+export type { CodexHeroProps };
 
 // ---------------------------------------------------------------------------
 // Scene: Honeycomb Architecture — tight cluster of 7 hexes rotating.
@@ -1635,6 +1576,8 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <ValueZiggurat canon={canon} />;
     case "off-grid":
       return <BrokenComb canon={canon} />;
+    case "alien-queen":
+      return <Throne canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1681,6 +1624,10 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
       case "off-grid":
         // Same 2-ring comb footprint as bacterium-zones.
         return [0, 2.6, 7.2];
+      case "alien-queen":
+        // Throne is tall (~1.6 above ground) and ring radius is 3.6.
+        // Pull back a hair so seat and retinue both read.
+        return [0, 2.4, 7.8];
       default:
         return [0, 2, 6];
     }
