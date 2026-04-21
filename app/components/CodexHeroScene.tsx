@@ -18,9 +18,12 @@
 // Current catalogue (bespoke → default fallback for the rest):
 //   honeycomb-architecture, grid-network, magway, hubs, grid-domes,
 //   basic-law, wireless-power, memory-metal, drone-delivery, illum,
-//   the-hive, bacterium-zones, alien-prince, eastern-grids, kafiristan.
-// File passes ~1000 lines — next scene addition should trigger a split
-// (group scenes by theme in sibling modules imported lazily from here).
+//   the-hive, bacterium-zones, alien-prince, eastern-grids, kafiristan,
+//   judgement-day, cyber-vikings, reward-banks, off-grid.
+// File passes 1600 lines — the NEXT scene addition MUST split this
+// catalogue into sibling modules under `app/components/codex-scenes/`
+// imported lazily from a slim dispatcher here. Do not grow this file
+// further without doing the split.
 //
 // Camera framing is letterbox (4:1-ish) to match the surrounding banner
 // slot the scene replaces. Objects orbit in the XZ plane so the wide
@@ -1185,6 +1188,366 @@ function HollowTerritory({ canon }: { canon: CodexHeroProps["canon"] }) {
 }
 
 // ---------------------------------------------------------------------------
+// Scene: Judgement Day — a black sphere plummeting toward a horizon
+// plane with a red spark tail, hex Grid floor fracturing on impact.
+// Canon is fiction-c2; the hotter amber keeps the palette consistent
+// with the page tone.
+// ---------------------------------------------------------------------------
+
+function MeteorFall({ canon }: { canon: CodexHeroProps["canon"] }) {
+  const meteorRef = useRef<THREE.Group>(null);
+  const trailRef = useRef<THREE.Mesh>(null);
+  const emissive = canonColour(canon);
+
+  useFrame((state) => {
+    const m = meteorRef.current;
+    const tr = trailRef.current;
+    if (!m || !tr) return;
+    // Loop over 4s — meteor starts at +y=5, falls to y=0.2, then resets.
+    // Easing is quadratic on the descent so impact reads fast without
+    // looking scripted.
+    const t = (state.clock.elapsedTime % 4) / 4;
+    const eased = t * t;
+    const y = 5 - eased * 4.8;
+    m.position.set(0.6, y, -0.4);
+    // Tail scales with descent — longer as it approaches the ground.
+    const len = 0.4 + eased * 2.2;
+    tr.scale.set(1, len, 1);
+    tr.position.set(0.6, y + len * 0.45, -0.4);
+  });
+
+  return (
+    <group>
+      {/* Ground floor — a wide hex platter representing the On-Grid
+          surface. Dimmer than most floors; this is the world about to
+          be hit. */}
+      <HexPrism
+        position={[0, -0.8, 0]}
+        radius={3.6}
+        depth={0.1}
+        emissive={emissive}
+        emissiveIntensity={0.12}
+      />
+
+      {/* Impact fractures — six narrow hex shards radiating out from
+          the impact point. Static positions; the dramatic motion is
+          the meteor, not the shockwave. */}
+      {Array.from({ length: 6 }, (_, i) => {
+        const angle = (i / 6) * Math.PI * 2;
+        const r = 1.6;
+        return (
+          <HexPrism
+            key={i}
+            position={[Math.cos(angle) * r, -0.7, Math.sin(angle) * r]}
+            scale={0.3}
+            emissive={emissive}
+            emissiveIntensity={0.45}
+          />
+        );
+      })}
+
+      {/* Tail — red emissive cylinder above the meteor, scaled each
+          frame so the tail grows during descent. */}
+      <mesh ref={trailRef}>
+        <cylinderGeometry args={[0.12, 0.02, 1, 8]} />
+        <meshBasicMaterial color="#ff3a1c" transparent opacity={0.85} />
+      </mesh>
+
+      {/* Meteor — a faceted dark sphere that reads as a rock, not a
+          planet. Low geometry count for the flat-shading read. */}
+      <group ref={meteorRef}>
+        <mesh>
+          <icosahedronGeometry args={[0.35, 0]} />
+          <meshStandardMaterial
+            color="#05060a"
+            emissive="#ff3a1c"
+            emissiveIntensity={0.4}
+            metalness={0.2}
+            roughness={0.9}
+            flatShading
+          />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Scene: Cyber Vikings — five angular hex silhouettes at irregular
+// heights and tilts, all leaning slightly forward like raiders
+// cresting a ridge. Red edge glow rather than face glow so the
+// silhouette reads as menacing outline. No auto-rotation — stillness
+// is the threat.
+// ---------------------------------------------------------------------------
+
+function RaiderSilhouettes({ canon }: { canon: CodexHeroProps["canon"] }) {
+  const emissive = canonColour(canon);
+
+  // Hand-placed raider positions — irregular spacing + heights so the
+  // line doesn't read as a uniform row. Forward lean is baked into
+  // the rotation values.
+  const raiders = useMemo(
+    () =>
+      [
+        { pos: [-3.4, -0.2, 0.4] as const, tilt: 0.18, scale: 0.95 },
+        { pos: [-1.8, 0.4, -0.2] as const, tilt: 0.12, scale: 1.1 },
+        { pos: [-0.1, -0.1, 0.3] as const, tilt: 0.22, scale: 1.25 },
+        { pos: [1.9, 0.3, -0.1] as const, tilt: 0.15, scale: 1.05 },
+        { pos: [3.3, -0.2, 0.2] as const, tilt: 0.2, scale: 0.9 },
+      ] as const,
+    [],
+  );
+
+  return (
+    <group>
+      {raiders.map((r, i) => (
+        <group key={i} position={r.pos} rotation={[r.tilt, 0.3, 0]}>
+          {/* Body — a tall narrow hex prism for the raider silhouette. */}
+          <HexPrism
+            rotation={[0, Math.PI / 6, 0]}
+            radius={0.42}
+            depth={1.8}
+            scale={r.scale}
+            emissive="#ff2a0c"
+            emissiveIntensity={0.8}
+            color="#1a0606"
+          />
+          {/* Head — small cube perched on top. Reads as "rider" rather
+              than abstract prism. */}
+          <mesh position={[0, 1.1 * r.scale, 0]}>
+            <boxGeometry args={[0.32, 0.28, 0.28]} />
+            <meshStandardMaterial
+              color="#1a0606"
+              emissive="#ff3a1c"
+              emissiveIntensity={0.6}
+              metalness={0.3}
+              roughness={0.5}
+            />
+          </mesh>
+        </group>
+      ))}
+      {/* Floor — a wide dim hex disc in a cold tone so the raiders
+          read against it. Uses emissive so the ridge reads in frame. */}
+      <HexPrism
+        position={[0, -1.1, 0]}
+        radius={4}
+        depth={0.08}
+        emissive={emissive}
+        emissiveIntensity={0.1}
+      />
+    </group>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Scene: Reward Banks — ziggurat of hex tiers ascending, each more
+// emissive than the one below. Small floating "coin" disc orbits
+// above the top tier. The tiered-reward read drops in instantly.
+// ---------------------------------------------------------------------------
+
+function ValueCoin({ canon }: { canon: CodexHeroProps["canon"] }) {
+  const ref = useRef<THREE.Mesh>(null);
+  const emissive = canonColour(canon);
+
+  useFrame((state) => {
+    const m = ref.current;
+    if (!m) return;
+    const t = state.clock.elapsedTime * 0.9;
+    m.position.set(Math.cos(t) * 0.8, 2.2 + Math.sin(t * 1.4) * 0.08, Math.sin(t) * 0.8);
+    m.rotation.y = t * 2;
+  });
+
+  return (
+    <mesh ref={ref} rotation={[Math.PI / 2, 0, 0]}>
+      <cylinderGeometry args={[0.22, 0.22, 0.05, 6, 1, false]} />
+      <meshStandardMaterial
+        color="#0b1030"
+        emissive={emissive}
+        emissiveIntensity={1.4}
+        metalness={0.7}
+        roughness={0.2}
+      />
+    </mesh>
+  );
+}
+
+function ValueZiggurat({ canon }: { canon: CodexHeroProps["canon"] }) {
+  const ref = useRef<THREE.Group>(null);
+  const emissive = canonColour(canon);
+
+  useFrame((_, delta) => {
+    const g = ref.current;
+    if (!g) return;
+    g.rotation.y += delta * 0.1;
+  });
+
+  // Four tiers ascending — each narrower and more emissive than the
+  // tier below. Reads as a reward ladder, not a building.
+  const tiers = useMemo(
+    () => [
+      { y: -1.0, radius: 2.0, depth: 0.4, glow: 0.2 },
+      { y: -0.45, radius: 1.55, depth: 0.4, glow: 0.35 },
+      { y: 0.1, radius: 1.1, depth: 0.4, glow: 0.55 },
+      { y: 0.65, radius: 0.7, depth: 0.4, glow: 0.85 },
+    ],
+    [],
+  );
+
+  return (
+    <group ref={ref}>
+      {tiers.map((t, i) => (
+        <HexPrism
+          key={i}
+          position={[0, t.y, 0]}
+          radius={t.radius}
+          depth={t.depth}
+          emissive={emissive}
+          emissiveIntensity={t.glow}
+        />
+      ))}
+      <ValueCoin canon={canon} />
+    </group>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Scene: Off-Grid — honeycomb cluster where ~40% of cells flicker or
+// sit dim. The network compromised. Flicker is subtle (not epilepsy)
+// and on a per-cell phase so the dimness reads as ambient failure,
+// not coordinated motion.
+// ---------------------------------------------------------------------------
+
+function BrokenCell({
+  position,
+  broken,
+  phase,
+  canon,
+}: {
+  position: readonly [number, number, number];
+  broken: boolean;
+  phase: number;
+  canon: CodexHeroProps["canon"];
+}) {
+  const ref = useRef<THREE.Mesh>(null);
+  const emissive = canonColour(canon);
+
+  useFrame((state) => {
+    const m = ref.current;
+    if (!m) return;
+    const mat = m.material as THREE.MeshStandardMaterial;
+    if (broken) {
+      // Broken cells pulse low + occasionally flicker near-dark. Mix
+      // a slow and a fast sine so the flicker is irregular.
+      const t = state.clock.elapsedTime;
+      const slow = (Math.sin(t * 0.6 + phase) + 1) / 2;
+      const fast = Math.sin(t * 5.2 + phase * 3);
+      const glow = 0.08 + slow * 0.18 + (fast > 0.85 ? -0.15 : 0);
+      mat.emissiveIntensity = Math.max(0.04, glow);
+    }
+  });
+
+  return (
+    <mesh
+      ref={ref}
+      position={[position[0], position[1], position[2]]}
+      rotation={[0, Math.PI / 6, 0]}
+      frustumCulled={false}
+    >
+      <cylinderGeometry args={[0.9, 0.9, 0.22, 6, 1, false]} />
+      <meshStandardMaterial
+        color="#0b1030"
+        emissive={emissive}
+        emissiveIntensity={broken ? 0.12 : 0.45}
+        metalness={0.3}
+        roughness={0.5}
+      />
+    </mesh>
+  );
+}
+
+function BrokenComb({ canon }: { canon: CodexHeroProps["canon"] }) {
+  const groupRef = useRef<THREE.Group>(null);
+
+  // Same 19-cell 2-ring layout as InfectedZone. Deterministic broken
+  // mask so the damage pattern is stable across renders.
+  const cells = useMemo(() => {
+    const SQRT3 = Math.sqrt(3);
+    const r = 1;
+    const brokenMask = [
+      true, // centre
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+    ];
+    const out: Array<{
+      pos: readonly [number, number, number];
+      broken: boolean;
+    }> = [{ pos: [0, 0, 0] as const, broken: brokenMask[0] ?? false }];
+    const dirs: Array<readonly [number, number]> = [
+      [1, 0],
+      [1, -1],
+      [0, -1],
+      [-1, 0],
+      [-1, 1],
+      [0, 1],
+    ];
+    dirs.forEach(([dq, dr], i) => {
+      const x = r * SQRT3 * (dq + dr / 2);
+      const z = r * 1.5 * dr;
+      out.push({ pos: [x, 0, z] as const, broken: brokenMask[1 + i] ?? false });
+    });
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2;
+      const radius = r * SQRT3 * 2;
+      out.push({
+        pos: [
+          Math.cos(angle) * radius,
+          0,
+          Math.sin(angle) * radius,
+        ] as const,
+        broken: brokenMask[7 + i] ?? false,
+      });
+    }
+    return out;
+  }, []);
+
+  useFrame((_, delta) => {
+    const g = groupRef.current;
+    if (!g) return;
+    g.rotation.y += delta * 0.04;
+  });
+
+  return (
+    <group ref={groupRef}>
+      {cells.map((c, i) => (
+        <BrokenCell
+          key={i}
+          position={c.pos}
+          broken={c.broken}
+          phase={i * 0.7}
+          canon={canon}
+        />
+      ))}
+    </group>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Default scene — used for any entry without a dedicated variant.
 // A single large hex prism slowly rotating with a ring of 6 smaller
 // satellites. Canon sets the glow tone.
@@ -1264,6 +1627,14 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <SensingGrid canon={canon} />;
     case "kafiristan":
       return <HollowTerritory canon={canon} />;
+    case "judgement-day":
+      return <MeteorFall canon={canon} />;
+    case "cyber-vikings":
+      return <RaiderSilhouettes canon={canon} />;
+    case "reward-banks":
+      return <ValueZiggurat canon={canon} />;
+    case "off-grid":
+      return <BrokenComb canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1303,6 +1674,13 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Perimeter ring needs breathing room so the void reads as
         // central rather than cropped.
         return [0, 2.4, 7.5];
+      case "judgement-day":
+        // Meteor starts at y=5 — need the camera a little higher to
+        // frame the top of the fall without cropping.
+        return [0, 2.8, 7];
+      case "off-grid":
+        // Same 2-ring comb footprint as bacterium-zones.
+        return [0, 2.6, 7.2];
       default:
         return [0, 2, 6];
     }
