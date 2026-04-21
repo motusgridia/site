@@ -33,8 +33,8 @@ export function Education({ canon }: { canon: CodexCanon }) {
   // read as a receding audience.
   const students = useMemo<Student[]>(() => {
     const arr: Student[] = [];
-    const rows = 3;
-    const perRow = 5;
+    const rows: number = 3;
+    const perRow: number = 5;
     for (let row = 0; row < rows; row++) {
       const radius = 1.6 + row * 0.8;
       const spread = (Math.PI / 3) + row * 0.08; // widens per row
