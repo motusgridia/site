@@ -67,6 +67,7 @@ import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { AuraAndPhotons } from "./codex-scenes/aura-and-photons";
 import { AwolAndroids } from "./codex-scenes/awol-androids";
+import { AxeMaiden } from "./codex-scenes/axe-maiden";
 import { BaseCamps } from "./codex-scenes/base-camps";
 import { BioengineeredTribes } from "./codex-scenes/bioengineered-tribes";
 import { BioGun } from "./codex-scenes/bio-gun";
@@ -92,6 +93,7 @@ import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { LiveStreamedScience } from "./codex-scenes/live-streamed-science";
 import { MediaProductionTech } from "./codex-scenes/media-production-tech";
 import { Modularity } from "./codex-scenes/modularity";
+import { NanoCamBullets } from "./codex-scenes/nano-cam-bullets";
 import { NeutralZoneMilitia } from "./codex-scenes/neutral-zone-militia";
 import { NorthernDominion } from "./codex-scenes/northern-dominion";
 import { OffGridMegacities } from "./codex-scenes/off-grid-megacities";
@@ -104,6 +106,7 @@ import { TemporaryResidence } from "./codex-scenes/temporary-residence";
 import { TetherUpgradeTech } from "./codex-scenes/tether-upgrade-tech";
 import { TheSaviour } from "./codex-scenes/the-saviour";
 import { Throne } from "./codex-scenes/throne";
+import { TransitionalStates } from "./codex-scenes/transitional-states";
 import { Vader } from "./codex-scenes/vader";
 import { VargasModel } from "./codex-scenes/vargas-model";
 import { Voting } from "./codex-scenes/voting";
@@ -1732,6 +1735,12 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <BioGun canon={canon} />;
     case "cooling-tubes":
       return <CoolingTubes canon={canon} />;
+    case "axe-maiden":
+      return <AxeMaiden canon={canon} />;
+    case "nano-cam-bullets":
+      return <NanoCamBullets canon={canon} />;
+    case "transitional-states":
+      return <TransitionalStates canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1968,6 +1977,21 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Reservoirs at r=1.6 around host, drip line to y=2.0 — tall
         // and wide frame so the circulation and the drip both read.
         return [0, 2.6, 6.8];
+      case "axe-maiden":
+        // Figure at centre, axes orbiting at r≈0.66, memorial hex at
+        // z=-1.6 — slight lift + moderate depth so the memorial and
+        // the arena ring both read without crowding the figure.
+        return [0, 2.4, 6.6];
+      case "nano-cam-bullets":
+        // Gun at x=-1.15 to target at x=+1.85 — wide horizontal
+        // composition. Slight lift so the bullet's y-kinks read as
+        // course corrections rather than a flat streak.
+        return [0, 2.2, 6.8];
+      case "transitional-states":
+        // Three hexes across x ∈ [-1.9, +1.9] plus checkpoint belt
+        // and craft cluster — wide frame to keep the whole gradient
+        // from Off-Grid to On-Grid in shot.
+        return [0, 2.6, 7.4];
       default:
         return [0, 2, 6];
     }
