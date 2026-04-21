@@ -63,6 +63,7 @@ import { AdvancedPcsInWalls } from "./codex-scenes/advanced-pcs-in-walls";
 import { AlienBacterium } from "./codex-scenes/alien-bacterium";
 import { AlienEmpire } from "./codex-scenes/alien-empire";
 import { AlienParasites } from "./codex-scenes/alien-parasites";
+import { AlienPrince } from "./codex-scenes/alien-prince";
 import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { AuraAndPhotons } from "./codex-scenes/aura-and-photons";
@@ -515,72 +516,11 @@ function InfectedZone({ canon }: { canon: CodexHeroProps["canon"] }) {
 }
 
 // ---------------------------------------------------------------------------
-// Scene: Alien Prince — a chess-like hex board at varying heights. The
-// "mind reading the board" is implied by the vertical variation and
-// slow rotation. No pulses, no action — just contemplation. The Prince
-// does not move first.
-// ---------------------------------------------------------------------------
-
-function StrategyBoard({ canon }: { canon: CodexHeroProps["canon"] }) {
-  const ref = useRef<THREE.Group>(null);
-  const emissive = canonColour(canon);
-
-  // 4x3 board of hexes, each at a deterministic pseudo-random height so
-  // the pieces feel placed, not procedurally scattered. A few "lifted"
-  // pieces read as the Prince's active considerations; the low pieces
-  // read as idle state.
-  const pieces = useMemo(() => {
-    const heights = [
-      0.0, 0.6, 0.1, 0.9, 0.3, 0.0, 1.2, 0.2, 0.7, 0.0, 0.4, 0.8,
-    ];
-    const out: Array<{
-      pos: readonly [number, number, number];
-      lift: number;
-    }> = [];
-    const SQRT3 = Math.sqrt(3);
-    for (let col = 0; col < 4; col++) {
-      for (let row = 0; row < 3; row++) {
-        const x = (col - 1.5) * SQRT3 * 0.95;
-        const z = (row - 1) * 1.55;
-        const h = heights[col * 3 + row] ?? 0;
-        out.push({ pos: [x, h * 0.6 - 0.2, z] as const, lift: h });
-      }
-    }
-    return out;
-  }, []);
-
-  useFrame((_, delta) => {
-    const g = ref.current;
-    if (!g) return;
-    g.rotation.y += delta * 0.07;
-  });
-
-  return (
-    <group ref={ref}>
-      {pieces.map((p, i) => (
-        <HexPrism
-          key={i}
-          position={p.pos}
-          scale={0.52}
-          depth={0.3}
-          emissive={emissive}
-          // Lifted pieces glow harder — they are the considered moves.
-          emissiveIntensity={0.15 + p.lift * 0.55}
-        />
-      ))}
-      {/* Ground platter — a dark wide hex under the whole board so the
-          pieces read as "placed on a surface" rather than floating in
-          void. */}
-      <HexPrism
-        position={[0, -0.6, 0]}
-        radius={4.2}
-        depth={0.05}
-        emissive={emissive}
-        emissiveIntensity={0.08}
-      />
-    </group>
-  );
-}
+// Scene: Alien Prince — promoted to `./codex-scenes/alien-prince.tsx`.
+// Inline StrategyBoard was a static 4×3 hex board with varied heights
+// that rotated slowly. The module version adds per-piece breathing,
+// a "currently considered" focus that rotates every 4s, and a threat
+// beam between the considered piece and its paired counter.
 
 // ---------------------------------------------------------------------------
 // Scene: Eastern Grids — a honeycomb cluster with sensing rings
@@ -1123,7 +1063,7 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
     case "bacterium-zones":
       return <InfectedZone canon={canon} />;
     case "alien-prince":
-      return <StrategyBoard canon={canon} />;
+      return <AlienPrince canon={canon} />;
     case "eastern-grids":
       return <SensingGrid canon={canon} />;
     case "kafiristan":
