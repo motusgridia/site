@@ -90,6 +90,7 @@ import { Fashion } from "./codex-scenes/fashion";
 import { Flight } from "./codex-scenes/flight";
 import { GhostHunters } from "./codex-scenes/ghost-hunters";
 import { GridLawTeams } from "./codex-scenes/grid-law-teams";
+import { GridNetwork } from "./codex-scenes/grid-network";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { HoneycombArchitecture } from "./codex-scenes/honeycomb-architecture";
 import { KafiristanPact } from "./codex-scenes/kafiristan-pact";
@@ -127,94 +128,11 @@ export type { CodexHeroProps };
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// Scene: Grid Network — three combs orbiting a planetary centre.
-//
-// Echoes the "planet covered in honeycomb" copy from the entry. A dark
-// sphere anchors the scene; three triangular hex clusters orbit around it
-// at different radii and tilts.
+// Scene: Grid Network — promoted to `./codex-scenes/grid-network.tsx`. The
+// inline OrbitComb + PlanetaryNetwork are gone; the module adds Hub spires
+// that face outward, equator bands on the planet, and traffic particles
+// that arc between Grids. See module.
 // ---------------------------------------------------------------------------
-
-function OrbitComb({
-  radius,
-  speed,
-  tilt,
-  phase,
-  canon,
-}: {
-  radius: number;
-  speed: number;
-  tilt: number;
-  phase: number;
-  canon: CodexHeroProps["canon"];
-}) {
-  const ref = useRef<THREE.Group>(null);
-  const emissive = canonColour(canon);
-
-  useFrame((state) => {
-    const g = ref.current;
-    if (!g) return;
-    const t = state.clock.elapsedTime * speed + phase;
-    g.position.set(
-      Math.cos(t) * radius,
-      Math.sin(t) * Math.sin(tilt) * radius * 0.3,
-      Math.sin(t) * radius,
-    );
-    g.rotation.y = -t * 0.5;
-  });
-
-  return (
-    <group ref={ref}>
-      <HexPrism emissive={emissive} emissiveIntensity={0.55} scale={0.5} />
-      <HexPrism
-        position={[0.9, 0, 0]}
-        emissive={emissive}
-        emissiveIntensity={0.35}
-        scale={0.5}
-      />
-      <HexPrism
-        position={[-0.45, 0, 0.78]}
-        emissive={emissive}
-        emissiveIntensity={0.35}
-        scale={0.5}
-      />
-    </group>
-  );
-}
-
-function PlanetaryNetwork({ canon }: { canon: CodexHeroProps["canon"] }) {
-  const emissive = canonColour(canon);
-  return (
-    <group>
-      {/* Planet core — matte dark sphere with a faint emissive so it reads
-          as a body rather than a silhouette hole. */}
-      <mesh>
-        <sphereGeometry args={[1.2, 48, 32]} />
-        <meshStandardMaterial
-          color="#0b1030"
-          emissive={emissive}
-          emissiveIntensity={0.08}
-          metalness={0.4}
-          roughness={0.6}
-        />
-      </mesh>
-      <OrbitComb radius={3.2} speed={0.35} tilt={0.2} phase={0} canon={canon} />
-      <OrbitComb
-        radius={4.1}
-        speed={0.26}
-        tilt={-0.3}
-        phase={2.1}
-        canon={canon}
-      />
-      <OrbitComb
-        radius={5.0}
-        speed={0.18}
-        tilt={0.45}
-        phase={4.2}
-        canon={canon}
-      />
-    </group>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Scene: Magway — translucent tube cross-section with a pod travelling
@@ -1516,7 +1434,7 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
     case "honeycomb-architecture":
       return <HoneycombArchitecture canon={canon} />;
     case "grid-network":
-      return <PlanetaryNetwork canon={canon} />;
+      return <GridNetwork canon={canon} />;
     case "magway":
       return <MagwayTube canon={canon} />;
     case "hubs":
