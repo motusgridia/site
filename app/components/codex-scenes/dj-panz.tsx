@@ -36,7 +36,7 @@ export function DjPanz({ canon }: { canon: CodexCanon }) {
   // cascade.
   const listeners = useMemo<Listener[]>(() => {
     const arr: Listener[] = [];
-    const n = 6;
+    const n: number = 6;
     const radius = 2.4;
     const spread = Math.PI / 2.2;
     for (let i = 0; i < n; i++) {
