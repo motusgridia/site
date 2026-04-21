@@ -81,6 +81,11 @@ export const ManifestoFrontmatter = z.object({
   // Display order in /manifesto nav
   order: z.number().int().positive(),
   draft: z.boolean().default(false),
+  // Optional — which codex scene to render as this manifesto's 3D hero.
+  // Manifesto entries are grounded-canon prose about Grid concepts; each
+  // has a codex counterpart whose scene most cleanly illustrates the
+  // idea. Omit for a prose-only page.
+  hero_scene_slug: Slug.optional(),
 });
 
 export type ManifestoFrontmatter = z.infer<typeof ManifestoFrontmatter>;

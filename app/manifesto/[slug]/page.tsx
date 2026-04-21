@@ -16,6 +16,7 @@ import {
   getManifestoEntry,
 } from "@/lib/content";
 import { renderMdx } from "@/lib/mdx";
+import CodexHeroCanvas from "@/app/components/CodexHeroCanvas";
 import { Footer } from "@/app/components/Footer";
 import { PageHeader } from "@/app/components/PageHeader";
 import { ProseShell } from "@/app/components/ProseShell";
@@ -125,6 +126,21 @@ export default async function ManifestoEntryPage({
             </li>
           </ol>
         </nav>
+
+        {/* Hero — 3D scene borrowed from the codex entry this manifesto
+            essay most cleanly illustrates. Manifesto entries are all
+            grounded-canon so we pin canon="grounded" regardless of which
+            scene is dispatched. The canvas falls back to a static
+            HexBanner in reduced-motion / small-screen per the codex
+            gate's contract. */}
+        {entry.frontmatter.hero_scene_slug ? (
+          <CodexHeroCanvas
+            slug={entry.frontmatter.hero_scene_slug}
+            canon="grounded"
+            caption={`Manifesto · § ${entry.frontmatter.section}`}
+            className="mb-10"
+          />
+        ) : null}
 
         <PageHeader
           eyebrow={<>Manifesto · § {entry.frontmatter.section}</>}
