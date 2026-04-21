@@ -16,17 +16,23 @@
 // into its own file.
 //
 // Current catalogue (bespoke → default fallback for the rest):
-//   honeycomb-architecture, grid-network, magway, hubs, grid-domes,
-//   basic-law, wireless-power, memory-metal, drone-delivery, illum,
-//   the-hive, bacterium-zones, alien-prince, eastern-grids, kafiristan,
-//   judgement-day, cyber-vikings, reward-banks, off-grid, alien-queen.
+//   Inline (pre-split):
+//     honeycomb-architecture, grid-network, magway, hubs, grid-domes,
+//     basic-law, wireless-power, memory-metal, drone-delivery, illum,
+//     the-hive, bacterium-zones, alien-prince, eastern-grids, kafiristan,
+//     judgement-day, cyber-vikings, reward-banks, off-grid.
+//   Sibling modules under `codex-scenes/<slug>.tsx`:
+//     alien-queen (throne), alien-empire, e-hair, modularity,
+//     blueprint-trade, augmented-reality, grids-platform, asteroid-mining,
+//     optionism, vr-technology, emergency-services, education,
+//     grid-law-teams, child-protection, vargas-model,
+//     degarido-architecture.
 //
-// Split-in-progress: new scenes go in `app/components/codex-scenes/<name>.tsx`
-// and import shared primitives from `./codex-scenes/shared`. The older
-// inline scenes (everything before alien-queen) still live in this file
-// — they will migrate out as they receive updates, to avoid a big-bang
-// refactor. The Throne scene (alien-queen) is the first to land under
-// the new pattern.
+// Split pattern: new scenes land under `app/components/codex-scenes/<slug>.tsx`
+// and import primitives from `./codex-scenes/shared`. The older inline
+// scenes still live in this file — they migrate out as they receive
+// updates to avoid a big-bang refactor. The Throne scene (alien-queen)
+// was the first to land under the pattern; thirteen more have followed.
 //
 // Camera framing is letterbox (4:1-ish) to match the surrounding banner
 // slot the scene replaces. Objects orbit in the XZ plane so the wide
@@ -56,6 +62,7 @@ import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { ChildProtection } from "./codex-scenes/child-protection";
+import { DegaridoArchitecture } from "./codex-scenes/degarido-architecture";
 import { Education } from "./codex-scenes/education";
 import { EHair } from "./codex-scenes/e-hair";
 import { EmergencyServices } from "./codex-scenes/emergency-services";
@@ -64,6 +71,7 @@ import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { Modularity } from "./codex-scenes/modularity";
 import { Optionism } from "./codex-scenes/optionism";
 import { Throne } from "./codex-scenes/throne";
+import { VargasModel } from "./codex-scenes/vargas-model";
 import { VrTechnology } from "./codex-scenes/vr-technology";
 
 // Re-export the public type so existing pages/components importing
@@ -1617,6 +1625,10 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <GridLawTeams canon={canon} />;
     case "child-protection":
       return <ChildProtection canon={canon} />;
+    case "vargas-model":
+      return <VargasModel canon={canon} />;
+    case "degarido-architecture":
+      return <DegaridoArchitecture canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1700,6 +1712,14 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Six-hex outer ring at radius 2.6 plus motes trailing to
         // rim along +X. Camera needs the wide frame.
         return [0, 2.4, 7.2];
+      case "vargas-model":
+        // Left + right clusters span x ∈ [-2.6, 2.6] — wider frame
+        // keeps both sides and the raised mediator in view.
+        return [0, 2.4, 7.4];
+      case "degarido-architecture":
+        // Docking pods extend to radius ~1.25 at max — default framing
+        // plus a slight lift reads the settlement from above.
+        return [0, 2.8, 6.4];
       default:
         return [0, 2, 6];
     }
