@@ -64,6 +64,7 @@ import { AlienEmpire } from "./codex-scenes/alien-empire";
 import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { AwolAndroids } from "./codex-scenes/awol-androids";
+import { BaseCamps } from "./codex-scenes/base-camps";
 import { BioengineeredTribes } from "./codex-scenes/bioengineered-tribes";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { ChildProtection } from "./codex-scenes/child-protection";
@@ -86,6 +87,8 @@ import { Modularity } from "./codex-scenes/modularity";
 import { NeutralZoneMilitia } from "./codex-scenes/neutral-zone-militia";
 import { NorthernDominion } from "./codex-scenes/northern-dominion";
 import { Optionism } from "./codex-scenes/optionism";
+import { PhilosophersPact } from "./codex-scenes/philosophers-pact";
+import { PlasmaCrystalSwords } from "./codex-scenes/plasma-crystal-swords";
 import { PrintedVillages } from "./codex-scenes/printed-villages";
 import { Revolt13 } from "./codex-scenes/revolt-13";
 import { TemporaryResidence } from "./codex-scenes/temporary-residence";
@@ -1696,6 +1699,12 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <MediaProductionTech canon={canon} />;
     case "energy-level-bands":
       return <EnergyLevelBands canon={canon} />;
+    case "philosophers-pact":
+      return <PhilosophersPact canon={canon} />;
+    case "base-camps":
+      return <BaseCamps canon={canon} />;
+    case "plasma-crystal-swords":
+      return <PlasmaCrystalSwords canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1879,6 +1888,19 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Wearer + column + overlay panel at y=1.1 + bands orbiting.
         // Closer frame reads the column+overlay meter clearly.
         return [0, 2.2, 6];
+      case "philosophers-pact":
+        // Three nodes in a triangle — front at z=1.4, back at z=-0.7.
+        // Slight lift reads the triangle geometry and the shell
+        // hex hovering at y=1.35 above the centroid.
+        return [0, 2.6, 6.4];
+      case "base-camps":
+        // Camp + rail + perimeter — wide frame to fit the train's
+        // approach from x=-2.8 and departure toward +2.8.
+        return [0, 2.6, 7.4];
+      case "plasma-crystal-swords":
+        // Two blades side-by-side at y up to ~1.8 — closer frame
+        // so the plasma channel inside the crystal reads clearly.
+        return [0, 2.2, 5.6];
       default:
         return [0, 2, 6];
     }
