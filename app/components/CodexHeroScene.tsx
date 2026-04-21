@@ -94,6 +94,7 @@ import { GridNetwork } from "./codex-scenes/grid-network";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { HoneycombArchitecture } from "./codex-scenes/honeycomb-architecture";
 import { Hubs } from "./codex-scenes/hubs";
+import { JudgementDay } from "./codex-scenes/judgement-day";
 import { KafiristanPact } from "./codex-scenes/kafiristan-pact";
 import { LiveStreamedScience } from "./codex-scenes/live-streamed-science";
 import { Magway } from "./codex-scenes/magway";
@@ -835,89 +836,11 @@ function HollowTerritory({ canon }: { canon: CodexHeroProps["canon"] }) {
 }
 
 // ---------------------------------------------------------------------------
-// Scene: Judgement Day — a black sphere plummeting toward a horizon
-// plane with a red spark tail, hex Grid floor fracturing on impact.
-// Canon is fiction-c2; the hotter amber keeps the palette consistent
-// with the page tone.
-// ---------------------------------------------------------------------------
-
-function MeteorFall({ canon }: { canon: CodexHeroProps["canon"] }) {
-  const meteorRef = useRef<THREE.Group>(null);
-  const trailRef = useRef<THREE.Mesh>(null);
-  const emissive = canonColour(canon);
-
-  useFrame((state) => {
-    const m = meteorRef.current;
-    const tr = trailRef.current;
-    if (!m || !tr) return;
-    // Loop over 4s — meteor starts at +y=5, falls to y=0.2, then resets.
-    // Easing is quadratic on the descent so impact reads fast without
-    // looking scripted.
-    const t = (state.clock.elapsedTime % 4) / 4;
-    const eased = t * t;
-    const y = 5 - eased * 4.8;
-    m.position.set(0.6, y, -0.4);
-    // Tail scales with descent — longer as it approaches the ground.
-    const len = 0.4 + eased * 2.2;
-    tr.scale.set(1, len, 1);
-    tr.position.set(0.6, y + len * 0.45, -0.4);
-  });
-
-  return (
-    <group>
-      {/* Ground floor — a wide hex platter representing the On-Grid
-          surface. Dimmer than most floors; this is the world about to
-          be hit. */}
-      <HexPrism
-        position={[0, -0.8, 0]}
-        radius={3.6}
-        depth={0.1}
-        emissive={emissive}
-        emissiveIntensity={0.12}
-      />
-
-      {/* Impact fractures — six narrow hex shards radiating out from
-          the impact point. Static positions; the dramatic motion is
-          the meteor, not the shockwave. */}
-      {Array.from({ length: 6 }, (_, i) => {
-        const angle = (i / 6) * Math.PI * 2;
-        const r = 1.6;
-        return (
-          <HexPrism
-            key={i}
-            position={[Math.cos(angle) * r, -0.7, Math.sin(angle) * r]}
-            scale={0.3}
-            emissive={emissive}
-            emissiveIntensity={0.45}
-          />
-        );
-      })}
-
-      {/* Tail — red emissive cylinder above the meteor, scaled each
-          frame so the tail grows during descent. */}
-      <mesh ref={trailRef}>
-        <cylinderGeometry args={[0.12, 0.02, 1, 8]} />
-        <meshBasicMaterial color="#ff3a1c" transparent opacity={0.85} />
-      </mesh>
-
-      {/* Meteor — a faceted dark sphere that reads as a rock, not a
-          planet. Low geometry count for the flat-shading read. */}
-      <group ref={meteorRef}>
-        <mesh>
-          <icosahedronGeometry args={[0.35, 0]} />
-          <meshStandardMaterial
-            color="#05060a"
-            emissive="#ff3a1c"
-            emissiveIntensity={0.4}
-            metalness={0.2}
-            roughness={0.9}
-            flatShading
-          />
-        </mesh>
-      </group>
-    </group>
-  );
-}
+// Scene: Judgement Day — promoted to `./codex-scenes/judgement-day.tsx`.
+// Inline MeteorFall was a single meteor falling on a 4s loop. The
+// module version adds a three-meteor barrage, shockwave rings on
+// each impact, and a fracture-pulse + floor-flash sync'd to the
+// primary meteor's impact moment.
 
 // ---------------------------------------------------------------------------
 // Scene: Cyber Vikings — five angular hex silhouettes at irregular
@@ -1275,7 +1198,7 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
     case "kafiristan":
       return <HollowTerritory canon={canon} />;
     case "judgement-day":
-      return <MeteorFall canon={canon} />;
+      return <JudgementDay canon={canon} />;
     case "cyber-vikings":
       return <RaiderSilhouettes canon={canon} />;
     case "reward-banks":
