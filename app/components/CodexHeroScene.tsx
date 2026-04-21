@@ -90,6 +90,7 @@ import { Flight } from "./codex-scenes/flight";
 import { GhostHunters } from "./codex-scenes/ghost-hunters";
 import { GridLawTeams } from "./codex-scenes/grid-law-teams";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
+import { KafiristanPact } from "./codex-scenes/kafiristan-pact";
 import { LiveStreamedScience } from "./codex-scenes/live-streamed-science";
 import { MediaProductionTech } from "./codex-scenes/media-production-tech";
 import { Modularity } from "./codex-scenes/modularity";
@@ -97,6 +98,7 @@ import { NanoCamBullets } from "./codex-scenes/nano-cam-bullets";
 import { NeutralZoneMilitia } from "./codex-scenes/neutral-zone-militia";
 import { NorthernDominion } from "./codex-scenes/northern-dominion";
 import { OffGridMegacities } from "./codex-scenes/off-grid-megacities";
+import { OnGridFaction } from "./codex-scenes/on-grid-faction";
 import { Optionism } from "./codex-scenes/optionism";
 import { PhilosophersPact } from "./codex-scenes/philosophers-pact";
 import { PlasmaCrystalSwords } from "./codex-scenes/plasma-crystal-swords";
@@ -1741,6 +1743,10 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <NanoCamBullets canon={canon} />;
     case "transitional-states":
       return <TransitionalStates canon={canon} />;
+    case "kafiristan-pact":
+      return <KafiristanPact canon={canon} />;
+    case "on-grid-faction":
+      return <OnGridFaction canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1992,6 +1998,15 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // and craft cluster — wide frame to keep the whole gradient
         // from Off-Grid to On-Grid in shot.
         return [0, 2.6, 7.4];
+      case "kafiristan-pact":
+        // Triangle of signatories at radius 1.3 with central hex —
+        // closer frame so the three-in-a-room intimacy reads.
+        return [0, 2.2, 6.4];
+      case "on-grid-faction":
+        // 7-hex honeycomb + three 1.4-tall spires + facility at
+        // x=1.8,y=-0.65. Wider frame so the hidden facility stays
+        // in shot without dominating.
+        return [0, 2.4, 7.8];
       default:
         return [0, 2, 6];
     }
