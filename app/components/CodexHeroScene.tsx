@@ -65,12 +65,15 @@ import { AlienEmpire } from "./codex-scenes/alien-empire";
 import { AlienParasites } from "./codex-scenes/alien-parasites";
 import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
+import { AuraAndPhotons } from "./codex-scenes/aura-and-photons";
 import { AwolAndroids } from "./codex-scenes/awol-androids";
 import { BaseCamps } from "./codex-scenes/base-camps";
 import { BioengineeredTribes } from "./codex-scenes/bioengineered-tribes";
+import { BioGun } from "./codex-scenes/bio-gun";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { BountyGameMap } from "./codex-scenes/bounty-game-map";
 import { ChildProtection } from "./codex-scenes/child-protection";
+import { CoolingTubes } from "./codex-scenes/cooling-tubes";
 import { CustomsAndDuels } from "./codex-scenes/customs-and-duels";
 import { CybertalibanTribe } from "./codex-scenes/cybertaliban-tribe";
 import { DarkContinent } from "./codex-scenes/dark-continent";
@@ -1723,6 +1726,12 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <Fashion canon={canon} />;
     case "customs-and-duels":
       return <CustomsAndDuels canon={canon} />;
+    case "aura-and-photons":
+      return <AuraAndPhotons canon={canon} />;
+    case "bio-gun":
+      return <BioGun canon={canon} />;
+    case "cooling-tubes":
+      return <CoolingTubes canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1946,6 +1955,19 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // orbit at r=1.3, judgement at y=1.6. Wide enough to show
         // the whole tribal audience without losing the exchange.
         return [0, 2.8, 7.4];
+      case "aura-and-photons":
+        // Body at y=0.55, aura ring at waist, photons rise to ~1.8,
+        // aurora at y=2.0. Pull back a hair so the peak aurora and
+        // the crystal orbit both fit.
+        return [0, 2.4, 6.4];
+      case "bio-gun":
+        // Gun at x=-1.6 to target at x=+1.6. Wide frame so the slug
+        // reads as flight rather than a single flash.
+        return [0, 2.4, 6.8];
+      case "cooling-tubes":
+        // Reservoirs at r=1.6 around host, drip line to y=2.0 — tall
+        // and wide frame so the circulation and the drip both read.
+        return [0, 2.6, 6.8];
       default:
         return [0, 2, 6];
     }
