@@ -1,9 +1,12 @@
 // /codex/[slug] — single codex entry.
 // Spec: /site-ia.md § Codex entry
 //       /site/CLAUDE.md § Content conventions, § Component rules
+//       Standing directive (session 6) — "every concept illustrated
+//       visually, solar-system-style 3d model UX".
 //
 // Layout:
-//   [hero banner — HexBanner or hero_image if supplied]
+//   [3D hero scene — CodexHeroCanvas, per-slug variant w/ HexBanner
+//    fallback for motion-disabled, small-screen, and SSR]
 //   [eyebrow: type · canon chips]
 //   [h1 title]
 //   [summary deck]
@@ -16,7 +19,6 @@
 // git log lookups in v0.3.
 
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -29,8 +31,8 @@ import {
 } from "@/lib/content";
 import { renderMdx } from "@/lib/mdx";
 import { CanonBadge, CodexTypeBadge } from "@/app/components/CodexBadges";
+import CodexHeroCanvas from "@/app/components/CodexHeroCanvas";
 import { Footer } from "@/app/components/Footer";
-import { HexBanner } from "@/app/components/HexBanner";
 import { PageHeader } from "@/app/components/PageHeader";
 import { ProseShell } from "@/app/components/ProseShell";
 import { RelatedRail } from "@/app/components/RelatedRail";
@@ -150,25 +152,18 @@ export default async function CodexEntryPage({
           </ol>
         </nav>
 
-        {/* Hero — real image if frontmatter supplies one; otherwise HexBanner. */}
-        {frontmatter.hero_image ? (
-          <div className="relative mb-10 overflow-hidden border border-line-soft bg-bg-panel">
-            <Image
-              src={frontmatter.hero_image}
-              alt=""
-              width={1200}
-              height={300}
-              className="aspect-[4/1] w-full object-cover"
-              priority
-            />
-          </div>
-        ) : (
-          <HexBanner
-            tone={frontmatter.canon === "grounded" ? "cyan" : "amber"}
-            caption={`${CODEX_TYPE_LABEL[frontmatter.type] ?? frontmatter.type} · ${frontmatter.tags[0] ?? ""}`}
-            className="mb-10"
-          />
-        )}
+        {/* Hero — 3D scene dispatched by slug, with a static HexBanner
+            underneath as the motion-disabled / SSR fallback. We used to
+            render next/image here off `frontmatter.hero_image`, but none
+            of those hero.webp files exist on disk yet and the 3D scene
+            illustrates each concept more directly per the Session 6
+            standing directive ("every concept illustrated visually"). */}
+        <CodexHeroCanvas
+          slug={slug}
+          canon={frontmatter.canon}
+          caption={`${CODEX_TYPE_LABEL[frontmatter.type] ?? frontmatter.type} · ${frontmatter.tags[0] ?? ""}`}
+          className="mb-10"
+        />
 
         <PageHeader
           title={frontmatter.title}
