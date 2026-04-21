@@ -111,6 +111,7 @@ import { PrintedVillages } from "./codex-scenes/printed-villages";
 import { Revolt13 } from "./codex-scenes/revolt-13";
 import { TemporaryResidence } from "./codex-scenes/temporary-residence";
 import { TetherUpgradeTech } from "./codex-scenes/tether-upgrade-tech";
+import { TheHive } from "./codex-scenes/the-hive";
 import { TheSaviour } from "./codex-scenes/the-saviour";
 import { Throne } from "./codex-scenes/throne";
 import { TransitionalStates } from "./codex-scenes/transitional-states";
@@ -461,99 +462,11 @@ function BisectedHex() {
 }
 
 // ---------------------------------------------------------------------------
-// Scene: The Hive — scattered bacterium nodes pulsing in coordination.
-//
-// The copy calls out "billions of microscopic agents, distributed across
-// infected hosts… forming a single intelligence that talks to itself
-// across continents". The scene reads as a cluster of small nodes at
-// different depths, all pulsing in sync when the "signal" fires. A
-// second inverse pulse answers — the signal bouncing back. Sync is the
-// point; distance without the sync would just look like noise.
-// ---------------------------------------------------------------------------
-
-function HiveNode({
-  position,
-  phase,
-  canon,
-}: {
-  position: readonly [number, number, number];
-  phase: number;
-  canon: CodexHeroProps["canon"];
-}) {
-  const ref = useRef<THREE.Mesh>(null);
-  const emissive = canonColour(canon);
-
-  useFrame((state) => {
-    const m = ref.current;
-    if (!m) return;
-    // Shared-clock pulse — every node listens to the same wall clock so
-    // the ensemble reads as coordinated, not random. Phase offset per
-    // node is small so the hive "breathes" rather than strobes.
-    const t = state.clock.elapsedTime * 1.4 + phase * 0.25;
-    const pulse = (Math.sin(t) + 1) / 2;
-    m.scale.setScalar(0.18 + pulse * 0.22);
-  });
-
-  return (
-    <mesh ref={ref} position={[position[0], position[1], position[2]]}>
-      <sphereGeometry args={[1, 14, 10]} />
-      <meshStandardMaterial
-        color="#7a0d0d"
-        emissive={emissive}
-        emissiveIntensity={1.4}
-      />
-    </mesh>
-  );
-}
-
-function HiveNetwork({ canon }: { canon: CodexHeroProps["canon"] }) {
-  const groupRef = useRef<THREE.Group>(null);
-
-  // Deterministic pseudo-random positions — spread across a wide XZ
-  // footprint with slight Y variation. Seeded so the hive never
-  // reshuffles between renders.
-  const nodes = useMemo(() => {
-    const seeded = [
-      [2.8, 0.3, -1.2],
-      [-2.4, -0.4, 1.1],
-      [1.6, 0.6, 2.3],
-      [-1.8, 0.2, -2.1],
-      [3.2, -0.2, 1.8],
-      [-3.1, 0.5, -0.6],
-      [0.4, 0.8, -2.7],
-      [-0.7, -0.3, 2.8],
-      [2.1, -0.5, -2.4],
-      [-2.7, 0.6, 2.2],
-      [0.9, 0.3, 1.0],
-      [-1.2, -0.2, -0.8],
-    ] as const;
-    return seeded;
-  }, []);
-
-  useFrame((_, delta) => {
-    const g = groupRef.current;
-    if (!g) return;
-    g.rotation.y += delta * 0.08;
-  });
-
-  return (
-    <group ref={groupRef}>
-      {nodes.map((pos, i) => (
-        <HiveNode key={i} position={pos} phase={i} canon={canon} />
-      ))}
-      {/* Faint central "aggregate" hex — the shape the distributed mind
-          would occupy if it were a body. Reads as a ghost below the
-          node cloud. */}
-      <HexPrism
-        position={[0, -1, 0]}
-        radius={2.2}
-        depth={0.05}
-        emissive={canonColour(canon)}
-        emissiveIntensity={0.1}
-      />
-    </group>
-  );
-}
+// Scene: The Hive — promoted to `./codex-scenes/the-hive.tsx`. The
+// inline HiveNode + HiveNetwork was a cloud of coordinated-pulse nodes.
+// The module version adds thought-packet traffic between node pairs
+// and a periodic unison-spike when the distributed mind decides
+// something.
 
 // ---------------------------------------------------------------------------
 // Scene: Bacterium Zones — honeycomb cluster with a spreading infection
@@ -1352,7 +1265,7 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
     case "illum":
       return <BisectedHex />;
     case "the-hive":
-      return <HiveNetwork canon={canon} />;
+      return <TheHive canon={canon} />;
     case "bacterium-zones":
       return <InfectedZone canon={canon} />;
     case "alien-prince":
