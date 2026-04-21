@@ -120,6 +120,7 @@ import { Vader } from "./codex-scenes/vader";
 import { VargasModel } from "./codex-scenes/vargas-model";
 import { Voting } from "./codex-scenes/voting";
 import { VrTechnology } from "./codex-scenes/vr-technology";
+import { WirelessPower } from "./codex-scenes/wireless-power";
 
 // Re-export the public type so existing pages/components importing
 // `CodexHeroProps` from this module keep working without churn.
@@ -225,81 +226,11 @@ function DomedGrid({ canon }: { canon: CodexHeroProps["canon"] }) {
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// Scene: Wireless Power — emitter tower with concentric cyan rings
-// pulsing outward across the floor.
-// ---------------------------------------------------------------------------
-
-function PulseRing({
-  phase,
-  canon,
-}: {
-  phase: number;
-  canon: CodexHeroProps["canon"];
-}) {
-  const ref = useRef<THREE.Mesh>(null);
-  const matRef = useRef<THREE.MeshBasicMaterial>(null);
-  const emissive = canonColour(canon);
-
-  useFrame((state) => {
-    const m = ref.current;
-    const mat = matRef.current;
-    if (!m || !mat) return;
-    const t = ((state.clock.elapsedTime + phase) % 3) / 3;
-    const r = 0.4 + t * 4.2;
-    m.scale.setScalar(r);
-    mat.opacity = 1 - t;
-  });
-
-  return (
-    <mesh ref={ref} rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.7, 0]}>
-      <ringGeometry args={[0.95, 1, 64]} />
-      <meshBasicMaterial
-        ref={matRef}
-        color={emissive}
-        transparent
-        opacity={1}
-        side={THREE.DoubleSide}
-      />
-    </mesh>
-  );
-}
-
-function EmitterTower({ canon }: { canon: CodexHeroProps["canon"] }) {
-  const emissive = canonColour(canon);
-  return (
-    <group>
-      {/* Central coil — thin hex prism tower. */}
-      <HexPrism
-        position={[0, 0, 0]}
-        depth={2.4}
-        radius={0.45}
-        emissive={emissive}
-        emissiveIntensity={0.9}
-      />
-      {/* Emitter cap — small hex on top glowing bright. */}
-      <HexPrism
-        position={[0, 1.45, 0]}
-        depth={0.18}
-        radius={0.75}
-        emissive={emissive}
-        emissiveIntensity={1.4}
-      />
-      {/* Three rings pulsing outward with staggered phases. */}
-      <PulseRing phase={0} canon={canon} />
-      <PulseRing phase={1} canon={canon} />
-      <PulseRing phase={2} canon={canon} />
-
-      {/* Floor hex — receives the rings visually. */}
-      <HexPrism
-        position={[0, -0.85, 0]}
-        radius={3.2}
-        depth={0.08}
-        emissive={emissive}
-        emissiveIntensity={0.14}
-      />
-    </group>
-  );
-}
+// Scene: Wireless Power — promoted to `./codex-scenes/wireless-power.tsx`.
+// Inline EmitterTower + PulseRing was tower + three pulsing rings + floor.
+// The module version adds six receiver hexes that light up as rings
+// cross them, a stack of coil windings that carries a travelling pulse
+// up the tower before each emission, and a rotating tower.
 
 // ---------------------------------------------------------------------------
 // Scene: Memory Metal — morphing geometry. A hex prism that breathes
@@ -1180,7 +1111,7 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
     case "basic-law":
       return <BasicLaw canon={canon} />;
     case "wireless-power":
-      return <EmitterTower canon={canon} />;
+      return <WirelessPower canon={canon} />;
     case "memory-metal":
       return <MorphingHex canon={canon} />;
     case "drone-delivery":
