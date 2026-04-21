@@ -52,11 +52,13 @@ import {
   type CodexHeroProps,
 } from "./codex-scenes/shared";
 import { AlienEmpire } from "./codex-scenes/alien-empire";
+import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { EHair } from "./codex-scenes/e-hair";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { Modularity } from "./codex-scenes/modularity";
+import { Optionism } from "./codex-scenes/optionism";
 import { Throne } from "./codex-scenes/throne";
 
 // Re-export the public type so existing pages/components importing
@@ -1596,6 +1598,10 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <AugmentedReality canon={canon} />;
     case "grids-platform":
       return <GridsPlatform canon={canon} />;
+    case "asteroid-mining":
+      return <AsteroidMining canon={canon} />;
+    case "optionism":
+      return <Optionism canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1654,6 +1660,14 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Nine-cell cluster with outer radius 2.6 — pull back so the
         // graph reads in full without spoke cells cropping.
         return [0, 2.6, 7.4];
+      case "asteroid-mining":
+        // Asteroid floats at y=2, spaceport at y=0 — tall composition
+        // needs the camera higher and a touch further out.
+        return [0, 2.6, 7];
+      case "optionism":
+        // Five clusters spread to radius ~2.3 — pull back so the
+        // outer satellites don't crop.
+        return [0, 2.6, 7.2];
       default:
         return [0, 2, 6];
     }
