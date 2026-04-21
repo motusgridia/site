@@ -26,7 +26,7 @@
 //     blueprint-trade, augmented-reality, grids-platform, asteroid-mining,
 //     optionism, vr-technology, emergency-services, education,
 //     grid-law-teams, child-protection, vargas-model,
-//     degarido-architecture, dreamgirl, the-saviour, vader.
+//     degarido-architecture, dreamgirl, the-saviour, vader, dj-panz.
 //
 // Split pattern: new scenes land under `app/components/codex-scenes/<slug>.tsx`
 // and import primitives from `./codex-scenes/shared`. The older inline
@@ -63,6 +63,7 @@ import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { ChildProtection } from "./codex-scenes/child-protection";
 import { DegaridoArchitecture } from "./codex-scenes/degarido-architecture";
+import { DjPanz } from "./codex-scenes/dj-panz";
 import { Dreamgirl } from "./codex-scenes/dreamgirl";
 import { Education } from "./codex-scenes/education";
 import { EHair } from "./codex-scenes/e-hair";
@@ -1638,6 +1639,8 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <TheSaviour canon={canon} />;
     case "vader":
       return <Vader canon={canon} />;
+    case "dj-panz":
+      return <DjPanz canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1741,6 +1744,10 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Tall body at y=0.9 + outer ring at radius 2.4 — camera
         // needs height and distance for the layered containment read.
         return [0, 2.8, 7];
+      case "dj-panz":
+        // Author set back at z=-1.6, audience arc at radius 2.4 —
+        // camera slightly raised to read the z-depth ordering.
+        return [0, 2.6, 6.8];
       default:
         return [0, 2, 6];
     }
