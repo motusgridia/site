@@ -52,8 +52,10 @@ import {
   type CodexHeroProps,
 } from "./codex-scenes/shared";
 import { AlienEmpire } from "./codex-scenes/alien-empire";
+import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { EHair } from "./codex-scenes/e-hair";
+import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { Modularity } from "./codex-scenes/modularity";
 import { Throne } from "./codex-scenes/throne";
 
@@ -1590,6 +1592,10 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <Modularity canon={canon} />;
     case "blueprint-trade":
       return <BlueprintTrade canon={canon} />;
+    case "augmented-reality":
+      return <AugmentedReality canon={canon} />;
+    case "grids-platform":
+      return <GridsPlatform canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1644,6 +1650,10 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // 5x5 lattice at 1.1 spacing is wide; monolith rises to 2.5.
         // Pull back and up so the lattice reads as formation, not clutter.
         return [0, 3.2, 8.2];
+      case "grids-platform":
+        // Nine-cell cluster with outer radius 2.6 — pull back so the
+        // graph reads in full without spoke cells cropping.
+        return [0, 2.6, 7.4];
       default:
         return [0, 2, 6];
     }
