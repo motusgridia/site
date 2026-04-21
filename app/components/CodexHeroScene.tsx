@@ -72,9 +72,12 @@ import { EHair } from "./codex-scenes/e-hair";
 import { EmergencyServices } from "./codex-scenes/emergency-services";
 import { GridLawTeams } from "./codex-scenes/grid-law-teams";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
+import { LiveStreamedScience } from "./codex-scenes/live-streamed-science";
 import { Modularity } from "./codex-scenes/modularity";
 import { NorthernDominion } from "./codex-scenes/northern-dominion";
 import { Optionism } from "./codex-scenes/optionism";
+import { TemporaryResidence } from "./codex-scenes/temporary-residence";
+import { TetherUpgradeTech } from "./codex-scenes/tether-upgrade-tech";
 import { TheSaviour } from "./codex-scenes/the-saviour";
 import { Throne } from "./codex-scenes/throne";
 import { Vader } from "./codex-scenes/vader";
@@ -1648,6 +1651,12 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <NorthernDominion canon={canon} />;
     case "advanced-materials":
       return <AdvancedMaterials canon={canon} />;
+    case "tether-upgrade-tech":
+      return <TetherUpgradeTech canon={canon} />;
+    case "live-streamed-science":
+      return <LiveStreamedScience canon={canon} />;
+    case "temporary-residence":
+      return <TemporaryResidence canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1763,6 +1772,19 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Crystal at y=0.55, Tesla nodes at radius 1.9 mid-ring —
         // default-depth camera reads the transfer ring cleanly.
         return [0, 2.4, 6.8];
+      case "tether-upgrade-tech":
+        // Tower at z=-0.7 + device row at z=1.1 — camera off-axis
+        // slightly high so the tether arc reads across the row.
+        return [0, 2.2, 6.5];
+      case "live-streamed-science":
+        // Twelve observers at radius 2.2 + suppliers at z≈-2 — pull
+        // back so the whole ring plus the supply chain read in one
+        // frame.
+        return [0, 2.6, 7.4];
+      case "temporary-residence":
+        // 3×3 grid spanning ~2.3×2.3 — camera lifted to read the
+        // occupancy pattern top-down-ish.
+        return [0, 3.2, 6.2];
       default:
         return [0, 2, 6];
     }
