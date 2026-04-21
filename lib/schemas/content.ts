@@ -106,6 +106,10 @@ export const LogFrontmatter = z.object({
   related_manifesto: z.array(Slug).default([]),
   excerpt: z.string().min(40).max(240),
   cover_image: z.string().startsWith("/").optional().nullable(),
+  // Optional — which codex scene to render as the log's 3D hero. Same
+  // contract as ManifestoFrontmatter.hero_scene_slug. Omit for a
+  // prose-only entry.
+  hero_scene_slug: Slug.optional(),
   draft: z.boolean().default(false),
 });
 

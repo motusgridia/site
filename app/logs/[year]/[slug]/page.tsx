@@ -16,6 +16,7 @@ import {
 } from "@/lib/content";
 import { renderMdx } from "@/lib/mdx";
 import { CanonBadge } from "@/app/components/CodexBadges";
+import CodexHeroCanvas from "@/app/components/CodexHeroCanvas";
 import { Footer } from "@/app/components/Footer";
 import { PageHeader } from "@/app/components/PageHeader";
 import { ProseShell } from "@/app/components/ProseShell";
@@ -124,6 +125,20 @@ export default async function LogEntryPage({
             </li>
           </ol>
         </nav>
+
+        {/* Hero — 3D scene borrowed from the codex entry that best
+            stands for this log's core idea. Canon inherits from the
+            log's own frontmatter so fiction-canon logs get amber
+            lighting and grounded logs get cyan. Reduced-motion and
+            small-screen fallback is handled inside CodexHeroCanvas. */}
+        {frontmatter.hero_scene_slug ? (
+          <CodexHeroCanvas
+            slug={frontmatter.hero_scene_slug}
+            canon={frontmatter.canon}
+            caption={`Log · ${formatted}`}
+            className="mb-10"
+          />
+        ) : null}
 
         <PageHeader
           eyebrow={
