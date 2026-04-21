@@ -64,6 +64,7 @@ import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { ChildProtection } from "./codex-scenes/child-protection";
+import { DarkContinent } from "./codex-scenes/dark-continent";
 import { DegaridoArchitecture } from "./codex-scenes/degarido-architecture";
 import { DjPanz } from "./codex-scenes/dj-panz";
 import { Dreamgirl } from "./codex-scenes/dreamgirl";
@@ -76,6 +77,7 @@ import { LiveStreamedScience } from "./codex-scenes/live-streamed-science";
 import { Modularity } from "./codex-scenes/modularity";
 import { NorthernDominion } from "./codex-scenes/northern-dominion";
 import { Optionism } from "./codex-scenes/optionism";
+import { Revolt13 } from "./codex-scenes/revolt-13";
 import { TemporaryResidence } from "./codex-scenes/temporary-residence";
 import { TetherUpgradeTech } from "./codex-scenes/tether-upgrade-tech";
 import { TheSaviour } from "./codex-scenes/the-saviour";
@@ -1657,6 +1659,10 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <LiveStreamedScience canon={canon} />;
     case "temporary-residence":
       return <TemporaryResidence canon={canon} />;
+    case "revolt-13":
+      return <Revolt13 canon={canon} />;
+    case "dark-continent":
+      return <DarkContinent canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1785,6 +1791,14 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // 3×3 grid spanning ~2.3×2.3 — camera lifted to read the
         // occupancy pattern top-down-ish.
         return [0, 3.2, 6.2];
+      case "revolt-13":
+        // Irregular cluster spanning x ∈ [-1.7, 1.5], z ∈ [-1.6, 1.3]
+        // — lift the camera slightly for the rise-pattern read.
+        return [0, 3, 6.2];
+      case "dark-continent":
+        // Two planetary anchors at x = ±2.2 + mid-corridor — wide
+        // frame needed to show both powers plus the rebel lane.
+        return [0, 2.4, 7.8];
       default:
         return [0, 2, 6];
     }
