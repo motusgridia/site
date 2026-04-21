@@ -75,10 +75,13 @@ import { Dreamgirl } from "./codex-scenes/dreamgirl";
 import { Education } from "./codex-scenes/education";
 import { EHair } from "./codex-scenes/e-hair";
 import { EmergencyServices } from "./codex-scenes/emergency-services";
+import { EnergyLevelBands } from "./codex-scenes/energy-level-bands";
 import { Flight } from "./codex-scenes/flight";
+import { GhostHunters } from "./codex-scenes/ghost-hunters";
 import { GridLawTeams } from "./codex-scenes/grid-law-teams";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { LiveStreamedScience } from "./codex-scenes/live-streamed-science";
+import { MediaProductionTech } from "./codex-scenes/media-production-tech";
 import { Modularity } from "./codex-scenes/modularity";
 import { NeutralZoneMilitia } from "./codex-scenes/neutral-zone-militia";
 import { NorthernDominion } from "./codex-scenes/northern-dominion";
@@ -1687,6 +1690,12 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <PrintedVillages canon={canon} />;
     case "neutral-zone-militia":
       return <NeutralZoneMilitia canon={canon} />;
+    case "ghost-hunters":
+      return <GhostHunters canon={canon} />;
+    case "media-production-tech":
+      return <MediaProductionTech canon={canon} />;
+    case "energy-level-bands":
+      return <EnergyLevelBands canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1857,6 +1866,19 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Hideout at centre, wolves at radius 1.35, assassins at
         // radius 2.7 — wide frame so all three radii read at once.
         return [0, 2.6, 7.4];
+      case "ghost-hunters":
+        // North cluster at z≈+2, bacterium front swinging z∈[-2, +0.5]
+        // — a little elevation plus extra depth so both zones sit
+        // in the shot without cropping the bacterium's retreat.
+        return [0, 3, 7.6];
+      case "media-production-tech":
+        // Horizontal pipeline from x=-2.4 to x=+2.4 — wide frame,
+        // low lift so the pulses travelling at y=0.5 read as a line.
+        return [0, 2.2, 7.6];
+      case "energy-level-bands":
+        // Wearer + column + overlay panel at y=1.1 + bands orbiting.
+        // Closer frame reads the column+overlay meter clearly.
+        return [0, 2.2, 6];
       default:
         return [0, 2, 6];
     }
