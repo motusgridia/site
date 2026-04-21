@@ -26,7 +26,7 @@
 //     blueprint-trade, augmented-reality, grids-platform, asteroid-mining,
 //     optionism, vr-technology, emergency-services, education,
 //     grid-law-teams, child-protection, vargas-model,
-//     degarido-architecture.
+//     degarido-architecture, dreamgirl, the-saviour, vader.
 //
 // Split pattern: new scenes land under `app/components/codex-scenes/<slug>.tsx`
 // and import primitives from `./codex-scenes/shared`. The older inline
@@ -63,6 +63,7 @@ import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { ChildProtection } from "./codex-scenes/child-protection";
 import { DegaridoArchitecture } from "./codex-scenes/degarido-architecture";
+import { Dreamgirl } from "./codex-scenes/dreamgirl";
 import { Education } from "./codex-scenes/education";
 import { EHair } from "./codex-scenes/e-hair";
 import { EmergencyServices } from "./codex-scenes/emergency-services";
@@ -70,7 +71,9 @@ import { GridLawTeams } from "./codex-scenes/grid-law-teams";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { Modularity } from "./codex-scenes/modularity";
 import { Optionism } from "./codex-scenes/optionism";
+import { TheSaviour } from "./codex-scenes/the-saviour";
 import { Throne } from "./codex-scenes/throne";
+import { Vader } from "./codex-scenes/vader";
 import { VargasModel } from "./codex-scenes/vargas-model";
 import { VrTechnology } from "./codex-scenes/vr-technology";
 
@@ -1629,6 +1632,12 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <VargasModel canon={canon} />;
     case "degarido-architecture":
       return <DegaridoArchitecture canon={canon} />;
+    case "dreamgirl":
+      return <Dreamgirl canon={canon} />;
+    case "the-saviour":
+      return <TheSaviour canon={canon} />;
+    case "vader":
+      return <Vader canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1720,6 +1729,18 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Docking pods extend to radius ~1.25 at max — default framing
         // plus a slight lift reads the settlement from above.
         return [0, 2.8, 6.4];
+      case "dreamgirl":
+        // Four source hexes at radius 2.3 plus a still centre — needs
+        // a wider frame to make the symmetry read.
+        return [0, 2.4, 7.2];
+      case "the-saviour":
+        // Wave origin at x=-2.8 + village cells out to ~2.4 — pull
+        // back to keep the whole village and the Saviour in frame.
+        return [0, 2.6, 7.6];
+      case "vader":
+        // Tall body at y=0.9 + outer ring at radius 2.4 — camera
+        // needs height and distance for the layered containment read.
+        return [0, 2.8, 7];
       default:
         return [0, 2, 6];
     }
