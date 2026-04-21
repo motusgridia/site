@@ -51,6 +51,7 @@ import {
   HexPrism,
   type CodexHeroProps,
 } from "./codex-scenes/shared";
+import { AlienEmpire } from "./codex-scenes/alien-empire";
 import { EHair } from "./codex-scenes/e-hair";
 import { Throne } from "./codex-scenes/throne";
 
@@ -1581,6 +1582,8 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <Throne canon={canon} />;
     case "e-hair":
       return <EHair canon={canon} />;
+    case "alien-empire":
+      return <AlienEmpire canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1631,6 +1634,10 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Throne is tall (~1.6 above ground) and ring radius is 3.6.
         // Pull back a hair so seat and retinue both read.
         return [0, 2.4, 7.8];
+      case "alien-empire":
+        // 5x5 lattice at 1.1 spacing is wide; monolith rises to 2.5.
+        // Pull back and up so the lattice reads as formation, not clutter.
+        return [0, 3.2, 8.2];
       default:
         return [0, 2, 6];
     }
