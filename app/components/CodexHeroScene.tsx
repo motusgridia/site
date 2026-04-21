@@ -55,11 +55,14 @@ import { AlienEmpire } from "./codex-scenes/alien-empire";
 import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
+import { Education } from "./codex-scenes/education";
 import { EHair } from "./codex-scenes/e-hair";
+import { EmergencyServices } from "./codex-scenes/emergency-services";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { Modularity } from "./codex-scenes/modularity";
 import { Optionism } from "./codex-scenes/optionism";
 import { Throne } from "./codex-scenes/throne";
+import { VrTechnology } from "./codex-scenes/vr-technology";
 
 // Re-export the public type so existing pages/components importing
 // `CodexHeroProps` from this module keep working without churn.
@@ -1602,6 +1605,12 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <AsteroidMining canon={canon} />;
     case "optionism":
       return <Optionism canon={canon} />;
+    case "vr-technology":
+      return <VrTechnology canon={canon} />;
+    case "emergency-services":
+      return <EmergencyServices canon={canon} />;
+    case "education":
+      return <Education canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1668,6 +1677,15 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Five clusters spread to radius ~2.3 — pull back so the
         // outer satellites don't crop.
         return [0, 2.6, 7.2];
+      case "emergency-services":
+        // Eight-cell outer ring at radius 2.6 — pull back so the
+        // radar sweep reads across the full frame.
+        return [0, 2.6, 7.4];
+      case "education":
+        // Three-row audience plus elevated teacher at z=-1.1 —
+        // camera needs a hair further back and centred slightly
+        // forward to keep the teacher in frame.
+        return [0, 2.6, 7];
       default:
         return [0, 2, 6];
     }
