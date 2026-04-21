@@ -63,6 +63,7 @@ import { AlienEmpire } from "./codex-scenes/alien-empire";
 import { AsteroidMining } from "./codex-scenes/asteroid-mining";
 import { AugmentedReality } from "./codex-scenes/augmented-reality";
 import { AwolAndroids } from "./codex-scenes/awol-androids";
+import { BioengineeredTribes } from "./codex-scenes/bioengineered-tribes";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { ChildProtection } from "./codex-scenes/child-protection";
 import { CybertalibanTribe } from "./codex-scenes/cybertaliban-tribe";
@@ -73,6 +74,7 @@ import { Dreamgirl } from "./codex-scenes/dreamgirl";
 import { Education } from "./codex-scenes/education";
 import { EHair } from "./codex-scenes/e-hair";
 import { EmergencyServices } from "./codex-scenes/emergency-services";
+import { Flight } from "./codex-scenes/flight";
 import { GridLawTeams } from "./codex-scenes/grid-law-teams";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { LiveStreamedScience } from "./codex-scenes/live-streamed-science";
@@ -86,6 +88,7 @@ import { TheSaviour } from "./codex-scenes/the-saviour";
 import { Throne } from "./codex-scenes/throne";
 import { Vader } from "./codex-scenes/vader";
 import { VargasModel } from "./codex-scenes/vargas-model";
+import { Voting } from "./codex-scenes/voting";
 import { VrTechnology } from "./codex-scenes/vr-technology";
 
 // Re-export the public type so existing pages/components importing
@@ -1669,6 +1672,12 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <CybertalibanTribe canon={canon} />;
     case "awol-androids":
       return <AwolAndroids canon={canon} />;
+    case "voting":
+      return <Voting canon={canon} />;
+    case "bioengineered-tribes":
+      return <BioengineeredTribes canon={canon} />;
+    case "flight":
+      return <Flight canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
@@ -1814,6 +1823,19 @@ export default function CodexHeroScene({ slug, canon }: CodexHeroProps) {
         // Three distinct clusters at [-1.7,-0.9], [1.6,0.8], [0.1,1.6]
         // — wide lifted frame so all three read at once.
         return [0, 3.4, 6.8];
+      case "voting":
+        // Voter ring at radius 2.2 + proposal centre + transfer arc
+        // — default depth with slight lift reads cleanly.
+        return [0, 2.4, 7];
+      case "bioengineered-tribes":
+        // Three packs at [-1.6,-1.0], [1.7,0.7], [-0.2,1.8] —
+        // lifted camera so the three orbit circles read as distinct
+        // groups not one blob.
+        return [0, 3.3, 6.8];
+      case "flight":
+        // Aircraft at altitudes y ∈ [0.8, 1.6] orbiting at radii up
+        // to 2.6 — camera needs to see the lift, not just the plate.
+        return [0, 2.2, 7];
       default:
         return [0, 2, 6];
     }
