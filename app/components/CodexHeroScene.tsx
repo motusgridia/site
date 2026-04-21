@@ -52,7 +52,9 @@ import {
   type CodexHeroProps,
 } from "./codex-scenes/shared";
 import { AlienEmpire } from "./codex-scenes/alien-empire";
+import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
 import { EHair } from "./codex-scenes/e-hair";
+import { Modularity } from "./codex-scenes/modularity";
 import { Throne } from "./codex-scenes/throne";
 
 // Re-export the public type so existing pages/components importing
@@ -1584,6 +1586,10 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
       return <EHair canon={canon} />;
     case "alien-empire":
       return <AlienEmpire canon={canon} />;
+    case "modularity":
+      return <Modularity canon={canon} />;
+    case "blueprint-trade":
+      return <BlueprintTrade canon={canon} />;
     default:
       return <DefaultHexStar canon={canon} />;
   }
