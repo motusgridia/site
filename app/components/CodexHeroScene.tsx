@@ -93,6 +93,7 @@ import { GridLawTeams } from "./codex-scenes/grid-law-teams";
 import { GridNetwork } from "./codex-scenes/grid-network";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
 import { HoneycombArchitecture } from "./codex-scenes/honeycomb-architecture";
+import { Hubs } from "./codex-scenes/hubs";
 import { KafiristanPact } from "./codex-scenes/kafiristan-pact";
 import { LiveStreamedScience } from "./codex-scenes/live-streamed-science";
 import { MediaProductionTech } from "./codex-scenes/media-production-tech";
@@ -201,56 +202,10 @@ function MagwayTube({ canon }: { canon: CodexHeroProps["canon"] }) {
 // slightly twisted at each level for the "megastructure not box" read.
 // ---------------------------------------------------------------------------
 
-function HubTower({ canon }: { canon: CodexHeroProps["canon"] }) {
-  const towerRef = useRef<THREE.Group>(null);
-  const emissive = canonColour(canon);
-
-  const levels = 10;
-
-  useFrame((_, delta) => {
-    const t = towerRef.current;
-    if (!t) return;
-    t.rotation.y += delta * 0.18;
-  });
-
-  return (
-    <group ref={towerRef} position={[0, -1.2, 0]}>
-      {Array.from({ length: levels }, (_, i) => {
-        // Scale the hex smaller as we go up. Each floor twists slightly
-        // against the one below so the silhouette reads as a spire.
-        const y = i * 0.55;
-        const scale = 1 - i * 0.07;
-        const twist = i * 0.08;
-        return (
-          <HexPrism
-            key={i}
-            position={[0, y, 0]}
-            rotation={[0, Math.PI / 6 + twist, 0]}
-            depth={0.45}
-            scale={scale}
-            emissive={emissive}
-            emissiveIntensity={0.22 + i * 0.04}
-          />
-        );
-      })}
-
-      {/* Base ring of 6 small hexes — the comb around the Hub. */}
-      {Array.from({ length: 6 }, (_, i) => {
-        const angle = (i / 6) * Math.PI * 2;
-        const r = 2.4;
-        return (
-          <HexPrism
-            key={`base-${i}`}
-            position={[Math.cos(angle) * r, -0.3, Math.sin(angle) * r]}
-            scale={0.45}
-            emissive={emissive}
-            emissiveIntensity={0.2}
-          />
-        );
-      })}
-    </group>
-  );
-}
+// Scene: Hubs — promoted to `./codex-scenes/hubs.tsx`. The inline HubTower
+// was a stacked spire that rotated. The module version adds the transit
+// capsule, per-level breathing, and the spider-web connection beams from
+// the tower top down to each base-ring hex.
 
 // ---------------------------------------------------------------------------
 // Scene: Grid Domes — transparent dome over a small hex comb.
@@ -1438,7 +1393,7 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
     case "magway":
       return <MagwayTube canon={canon} />;
     case "hubs":
-      return <HubTower canon={canon} />;
+      return <Hubs canon={canon} />;
     case "grid-domes":
       return <DomedGrid canon={canon} />;
     case "basic-law":
