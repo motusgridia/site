@@ -69,6 +69,7 @@ import { AuraAndPhotons } from "./codex-scenes/aura-and-photons";
 import { AwolAndroids } from "./codex-scenes/awol-androids";
 import { AxeMaiden } from "./codex-scenes/axe-maiden";
 import { BaseCamps } from "./codex-scenes/base-camps";
+import { BasicLaw } from "./codex-scenes/basic-law";
 import { BioengineeredTribes } from "./codex-scenes/bioengineered-tribes";
 import { BioGun } from "./codex-scenes/bio-gun";
 import { BlueprintTrade } from "./codex-scenes/blueprint-trade";
@@ -90,6 +91,7 @@ import { Flight } from "./codex-scenes/flight";
 import { GhostHunters } from "./codex-scenes/ghost-hunters";
 import { GridLawTeams } from "./codex-scenes/grid-law-teams";
 import { GridsPlatform } from "./codex-scenes/grids-platform";
+import { HoneycombArchitecture } from "./codex-scenes/honeycomb-architecture";
 import { KafiristanPact } from "./codex-scenes/kafiristan-pact";
 import { LiveStreamedScience } from "./codex-scenes/live-streamed-science";
 import { MediaProductionTech } from "./codex-scenes/media-production-tech";
@@ -119,59 +121,10 @@ import { VrTechnology } from "./codex-scenes/vr-technology";
 export type { CodexHeroProps };
 
 // ---------------------------------------------------------------------------
-// Scene: Honeycomb Architecture — tight cluster of 7 hexes rotating.
-//
-// One centre cell + six neighbours. Shows the fundamental honeycomb unit:
-// a Grid and its six-way adjacency. Reads in half a second at 300px tall.
+// Scene: Honeycomb Architecture — promoted to
+// `./codex-scenes/honeycomb-architecture.tsx`. Kept inline originally, then
+// upgraded to breathing-per-cell + outer-ring join cycle. See module.
 // ---------------------------------------------------------------------------
-
-function HoneycombCluster({ canon }: { canon: CodexHeroProps["canon"] }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const emissive = canonColour(canon);
-
-  // Six neighbour offsets in axial → world. Centre is (0,0).
-  const neighbours = useMemo(() => {
-    const r = 1;
-    const SQRT3 = Math.sqrt(3);
-    const positions: Array<readonly [number, number, number]> = [];
-    const dirs: Array<readonly [number, number]> = [
-      [1, 0],
-      [1, -1],
-      [0, -1],
-      [-1, 0],
-      [-1, 1],
-      [0, 1],
-    ];
-    for (const dir of dirs) {
-      const [dq, dr] = dir;
-      const x = r * SQRT3 * (dq + dr / 2);
-      const z = r * 1.5 * dr;
-      positions.push([x, 0, z] as const);
-    }
-    return positions;
-  }, []);
-
-  useFrame((_, delta) => {
-    const g = groupRef.current;
-    if (!g) return;
-    g.rotation.y += delta * 0.12;
-  });
-
-  return (
-    <group ref={groupRef}>
-      <HexPrism emissive={emissive} emissiveIntensity={0.4} scale={0.92} />
-      {neighbours.map((pos, i) => (
-        <HexPrism
-          key={i}
-          position={pos}
-          emissive={emissive}
-          emissiveIntensity={0.22}
-          scale={0.92}
-        />
-      ))}
-    </group>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Scene: Grid Network — three combs orbiting a planetary centre.
@@ -446,49 +399,10 @@ function DomedGrid({ canon }: { canon: CodexHeroProps["canon"] }) {
 }
 
 // ---------------------------------------------------------------------------
-// Scene: Basic Law — a single floating hex obelisk, faceted, slowly
-// rotating. One pillar for the "non-negotiable floor beneath every Grid".
+// Scene: Basic Law — promoted to `./codex-scenes/basic-law.tsx`. The inline
+// HexObelisk was a lone rotating hex; the module version adds the
+// reading-cycle bands + six bound satellite Grids.
 // ---------------------------------------------------------------------------
-
-function HexObelisk({ canon }: { canon: CodexHeroProps["canon"] }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const emissive = canonColour(canon);
-
-  useFrame((_, delta) => {
-    const m = meshRef.current;
-    if (!m) return;
-    m.rotation.y += delta * 0.18;
-  });
-
-  return (
-    <group>
-      <mesh
-        ref={meshRef}
-        rotation={[0, Math.PI / 6, 0]}
-        frustumCulled={false}
-      >
-        <cylinderGeometry args={[1, 1.2, 3.5, 6, 1, false]} />
-        <meshStandardMaterial
-          color="#0b1030"
-          emissive={emissive}
-          emissiveIntensity={0.55}
-          metalness={0.6}
-          roughness={0.25}
-          flatShading
-        />
-      </mesh>
-
-      {/* Ground platter — wide thin hex under the obelisk. */}
-      <HexPrism
-        position={[0, -1.9, 0]}
-        radius={2.2}
-        depth={0.12}
-        emissive={emissive}
-        emissiveIntensity={0.18}
-      />
-    </group>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Scene: Wireless Power — emitter tower with concentric cyan rings
@@ -1600,7 +1514,7 @@ function DefaultHexStar({ canon }: { canon: CodexHeroProps["canon"] }) {
 function SceneForSlug({ slug, canon }: CodexHeroProps) {
   switch (slug) {
     case "honeycomb-architecture":
-      return <HoneycombCluster canon={canon} />;
+      return <HoneycombArchitecture canon={canon} />;
     case "grid-network":
       return <PlanetaryNetwork canon={canon} />;
     case "magway":
@@ -1610,7 +1524,7 @@ function SceneForSlug({ slug, canon }: CodexHeroProps) {
     case "grid-domes":
       return <DomedGrid canon={canon} />;
     case "basic-law":
-      return <HexObelisk canon={canon} />;
+      return <BasicLaw canon={canon} />;
     case "wireless-power":
       return <EmitterTower canon={canon} />;
     case "memory-metal":
